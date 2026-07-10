@@ -86,7 +86,10 @@ def _coerce(raw: str) -> RecipeContent:
     try:
         return RecipeContent.model_validate_json(raw)
     except Exception:  # noqa: BLE001
-        start, end = raw.find("{"), raw.rfind("}")
-        if start != -1 and end != -1:
-            return RecipeContent.model_validate(json.loads(raw[start : end + 1]))
+        # Some endpoints (e.g. Gemini's OpenAI shim) append trailing tokens after the JSON
+        # object ("Extra data"). Decode the FIRST complete JSON object and ignore the rest.
+        start = raw.find("{")
+        if start != -1:
+            obj, _ = json.JSONDecoder().raw_decode(raw[start:])
+            return RecipeContent.model_validate(obj)
         raise

@@ -2,63 +2,61 @@
   "@context": "https://schema.org",
   "@type": "Recipe",
   "name": "One-Pan Garlic Butter Shrimp Pasta",
-  "description": "Succulent shrimp in a silky garlic-butter and white wine sauce tossed with linguine \u2014 a restaurant-worthy dinner in about 20 minutes, all in one pan.",
+  "description": "A quick and flavorful garlic butter shrimp pasta that comes together in about twenty minutes.",
   "recipeCuisine": "Italian-American",
   "recipeCategory": "main course",
-  "keywords": "pasta, shrimp, seafood, quick dinner, one-pan",
+  "keywords": "shrimp, pasta, garlic butter, one-pan, quick meal",
   "recipeYield": "4 servings",
-  "prepTime": "PT5M",
-  "cookTime": "PT15M",
+  "cookTime": "PT20M",
   "totalTime": "PT20M",
   "recipeIngredient": [
     "12 oz linguine",
-    "1 lb large shrimp (peeled and deveined)",
+    "1 lb large shrimp",
     "4 tbsp butter",
     "5 clove garlic (minced)",
     "0.5 cup dry white wine",
-    "1 lemon (juiced)",
-    "0.5 cup parmesan cheese (grated)",
-    "0.25 cup fresh parsley (chopped)",
+    "1 lemon",
+    "0.5 cup parmesan",
+    "0.25 cup parsley (fresh)",
     "0.5 tsp red pepper flakes",
-    "salt (to taste)",
-    "black pepper (to taste)",
-    "reserved pasta water (a splash)"
+    "salt",
+    "pepper"
   ],
   "recipeInstructions": [
     {
       "@type": "HowToStep",
       "position": 1,
-      "text": "Bring a large pot of salted water to a boil and cook the linguine until al dente. Reserve some pasta water, then drain.",
+      "text": "Bring a large pot of salted water to a boil and cook the linguine until al dente.",
       "name": "Step 1"
     },
     {
       "@type": "HowToStep",
       "position": 2,
-      "text": "Pat the shrimp dry and season with salt and pepper.",
+      "text": "Pat the shrimp dry and season them with salt and pepper.",
       "name": "Step 2"
     },
     {
       "@type": "HowToStep",
       "position": 3,
-      "text": "Melt the butter in a large skillet over medium heat, then add the garlic and cook until fragrant.",
+      "text": "Melt butter in a large skillet over medium heat, then add the garlic and cook until fragrant.",
       "name": "Step 3"
     },
     {
       "@type": "HowToStep",
       "position": 4,
-      "text": "Add the shrimp and cook about 2 minutes per side, until pink and opaque.",
+      "text": "Add the shrimp and cook for about two minutes per side until they turn pink.",
       "name": "Step 4"
     },
     {
       "@type": "HowToStep",
       "position": 5,
-      "text": "Pour in the white wine and lemon juice and let the sauce reduce for about a minute.",
+      "text": "Pour in the white wine and lemon juice, and let it reduce for a minute.",
       "name": "Step 5"
     },
     {
       "@type": "HowToStep",
       "position": 6,
-      "text": "Add the drained pasta straight into the skillet with a splash of reserved pasta water and toss to coat.",
+      "text": "Add the cooked pasta straight into the skillet with a splash of pasta water.",
       "name": "Step 6"
     },
     {
@@ -70,19 +68,19 @@
   ],
   "tool": [
     "large pot",
-    "large skillet",
-    "tongs"
+    "large stainless skillet",
+    "paper towels"
   ],
   "author": {
     "@type": "Person",
-    "name": "RecipeReel Demo Kitchen"
+    "name": "Demo Kitchen"
   },
-  "isBasedOn": "https://www.youtube.com/watch?v=DEMO",
+  "isBasedOn": "https://youtube.com/shorts/demo",
   "nutrition": {
     "@type": "NutritionInformation",
-    "calories": "560 calories",
-    "proteinContent": "34.0 g",
-    "carbohydrateContent": "62.0 g",
-    "fatContent": "18.0 g"
+    "calories": "580 calories",
+    "proteinContent": "32.0 g",
+    "carbohydrateContent": "55.0 g",
+    "fatContent": "24.0 g"
   }
 }

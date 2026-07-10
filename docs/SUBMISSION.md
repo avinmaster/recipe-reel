@@ -25,7 +25,7 @@
      ```bash
      SYNTHESIZER=fireworks FIREWORKS_API_KEY=<google-key> \
        FIREWORKS_BASE_URL=https://generativelanguage.googleapis.com/v1beta/openai/ \
-       SYNTH_MODEL=gemma-3-27b-it VISION=none TRANSCRIBER=mock uvicorn app.main:app
+       SYNTH_MODEL=gemma-4-31b-it VISION=none TRANSCRIBER=mock uvicorn app.main:app
      ```
      Real Gemma output — but not *AMD-hosted* (great for the demo; not the AMD-Gemma prize).
   2. **AMD MI300X pod (wins the AMD-Gemma prize):** self-host Gemma via vLLM, perception on-GPU:
