@@ -36,13 +36,16 @@ def _data_uri(path: str) -> str:
 
 
 class FireworksVisionAnalyzer:
-    name = f"fireworks:{settings.synth_model.split('/')[-1]}"
+    # Uses its OWN model (must be multimodal), independent of the text synth model — so you
+    # can run a text-only Fire Pass model (GLM/Kimi) for synthesis while still doing vision.
+    name = f"fireworks:{settings.vision_fireworks_model.split('/')[-1]}"
 
     def __init__(self) -> None:
         if not settings.fireworks_ready:
             raise RuntimeError("FIREWORKS_API_KEY not set")
         from openai import OpenAI  # noqa: PLC0415
 
+        self.model = settings.vision_fireworks_model
         self._client = OpenAI(
             base_url=settings.fireworks_base_url, api_key=settings.fireworks_api_key
         )
@@ -59,7 +62,7 @@ class FireworksVisionAnalyzer:
             content.append({"type": "image_url", "image_url": {"url": _data_uri(fr.path)}})
 
         resp = self._client.chat.completions.create(
-            model=settings.synth_model,
+            model=self.model,
             messages=[{"role": "user", "content": content}],
             temperature=0,
             response_format={"type": "json_object"},

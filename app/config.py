@@ -50,7 +50,11 @@ class Settings(BaseSettings):
     # ── Fireworks AI (OpenAI-compatible) ─────────────────────────────────────
     fireworks_api_key: str = ""
     fireworks_base_url: str = "https://api.fireworks.ai/inference/v1"
+    # Text synthesis model. Gemma targets the Gemma prize; on Fire Pass (no Gemma) use a
+    # text model there, e.g. accounts/fireworks/routers/glm-5p2-fast.
     synth_model: str = "accounts/fireworks/models/gemma-4-31b-it"
+    # Multimodal model for Fireworks vision (kept separate so a text-only synth model works).
+    vision_fireworks_model: str = "accounts/fireworks/models/gemma-4-31b-it"
 
     # ── AMD-hosted Gemma via local vLLM (OpenAI-compatible) ──────────────────
     amd_llm_base_url: str = "http://localhost:8001/v1"
