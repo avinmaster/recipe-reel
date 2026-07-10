@@ -241,6 +241,34 @@ kept shallow so it's a quick change.
   OUTAGE; YouTube bot-blocked from this box; Fireworks create-key modal too flaky to automate.
   **HARD LIMIT respected: did NOT submit the form or change the team** (user reiterated this).
 
+- **2026-07-11 (real inference WORKING)** — Major session. Outcomes:
+  - **Real Gemma-4 works end-to-end.** Fireworks does NOT host Gemma (all Gemma ids 404) and its
+    hackathon credits need a **payment method to activate** (official LabLab Admin ruling; user
+    later added a card → account active, $56 credits). Gemma IS on **Google AI Studio** as
+    `gemma-4-31b-it` (free, no card). Our synthesizer is endpoint-agnostic, so the working config
+    points `FIREWORKS_*` vars at Google: `FIREWORKS_BASE_URL=https://generativelanguage.googleapis.com/v1beta/openai/`,
+    `SYNTH_MODEL=gemma-4-31b-it`. Verified: 11 ingredients w/ on-screen provenance, timestamped
+    steps, salt/pepper correctly left null.
+  - **Vision:** Gemma-via-Google is text-only on that shim (images 500). Use **`gemini-2.5-flash`**
+    for `VISION=fireworks` (`VISION_FIREWORKS_MODEL=gemini-2.5-flash`) — verified reading frames.
+  - **Fixed** a real bug: `_coerce` now uses `json.JSONDecoder().raw_decode` (Gemini shim appends
+    trailing tokens → "Extra data" → previously dropped ingredients).
+  - **Added** `TRANSCRIBER=none` (empty transcript) so vision-only real runs aren't polluted by the
+    mock fixture. Providers: transcriber local|none|mock, vision local|fireworks|none|mock,
+    synth fireworks|amd|mock.
+  - **YouTube ingest in the backend needs NO cookies** — just a JS runtime. Fix: ingest passes
+    `js_runtimes={node,deno}` so yt-dlp solves YouTube's JS/PO-token challenge. System dep = **Node**
+    (added to both Dockerfiles); bumped `yt-dlp>=2026.07.04`. Verified full URL→recipe on real shorts.
+  - **THE Track-3 requirement (LabLab Admin ruling):** *actual AMD compute usage — running your model
+    on the AMD Jupyter Notebook — shown in repo AND demo.* Model choice (Fireworks vs Gemma) does NOT
+    matter. → Built **`notebooks/amd_recipereel_demo.ipynb`** (runs Whisper + Qwen2.5-VL on MI300X/ROCm,
+    prints device + peak GPU mem, extracts a recipe). **User must run it on the pod, commit the executed
+    notebook, and screen-record it.** AMD notebook cloud was in a 504/502 OUTAGE — retry when up.
+  - **Strategy:** demo/quality = Gemma-4 + Gemini vision (works now); AMD requirement = the notebook on
+    the pod (optionally `SYNTHESIZER=amd` vLLM-Gemma for the $2k AMD-Hosted-Gemma bonus). Repo public,
+    Docker, deck+cover Artifacts, tests green. Remaining = user-only: run notebook on pod, record demo,
+    export deck→PDF, submit. **Do NOT submit the lablab form or change the team.**
+
 <!-- Append new entries here as work progresses. Keep it terse and factual. -->
 
 ---
