@@ -71,19 +71,24 @@
 - [ ] `.env` is NOT tracked (only `.env.example`).
 - [ ] `make test` passes; `docker run` serves `/docs`.
 
-## Run on AMD Developer Cloud (MI300X) — the "Use of AMD Platforms" proof
+## ⭐ THE requirement: demonstrate AMD compute (per LabLab Admin, Jul 11)
+> "…your project must demonstrate **actual usage of AMD compute resources**, such as running or
+> fine-tuning your model on the **AMD Jupyter Notebook**, and this usage needs to be shown in your
+> **repository and demo**."
+
+Both Fireworks and Gemma are allowed; what's graded is **running on AMD**. Plan:
+- **Quality/demo path (works now):** Gemma-4 + Gemini vision (Google AI Studio) — the recipe you show.
+- **AMD-compute proof:** run **`notebooks/amd_recipereel_demo.ipynb`** on the AMD MI300X pod. It runs
+  Whisper-large-v3 + Qwen2.5-VL **on the GPU** and prints the device / peak GPU memory. Commit the
+  **executed** notebook (with outputs) to the repo and screen-record it in the demo — that's the
+  "shown in repository and demo" evidence. (AMD notebook cloud had a 504/502 outage — retry when up.)
+
 ```bash
-# 1) verify GPU
-python -c "import torch; print(torch.cuda.is_available(), torch.version.hip)"   # True 6.x
-# 2) install
-pip install torch torchaudio --index-url https://download.pytorch.org/whl/rocm6.4
-pip install -r requirements.txt -r requirements-gpu.txt
-apt-get install -y ffmpeg
-# 3) run perception on-GPU, synthesis on Gemma
-TRANSCRIBER=local VISION=local SYNTHESIZER=fireworks FIREWORKS_API_KEY=... uvicorn app.main:app
-#    …or host Gemma on the MI300X too (targets the $2k Track-3 Gemma prize):
-./scripts/serve_amd_gemma.sh      # vLLM Gemma on ROCm
-SYNTHESIZER=amd uvicorn app.main:app
+# On the pod (or verify the code path anywhere):
+python -c "import torch; print(torch.cuda.is_available(), torch.version.hip)"   # True 6.x on MI300X
+TRANSCRIBER=local VISION=local SYNTHESIZER=fireworks uvicorn app.main:app        # perception on-GPU
+# 100%-AMD option (also grabs the $2k AMD-Hosted Gemma bonus):
+./scripts/serve_amd_gemma.sh && SYNTHESIZER=amd uvicorn app.main:app             # Gemma via vLLM on ROCm
 ```
 `GET /api/v1/meta` and each recipe's `processing` block report the live device / GPU name /
 ROCm version — screenshot these for the demo to make AMD usage concrete.
