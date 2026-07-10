@@ -50,11 +50,14 @@ class Settings(BaseSettings):
     # ── Fireworks AI (OpenAI-compatible) ─────────────────────────────────────
     fireworks_api_key: str = ""
     fireworks_base_url: str = "https://api.fireworks.ai/inference/v1"
-    # Text synthesis model. Gemma targets the Gemma prize; on Fire Pass (no Gemma) use a
-    # text model there, e.g. accounts/fireworks/routers/glm-5p2-fast.
-    synth_model: str = "accounts/fireworks/models/gemma-4-31b-it"
-    # Multimodal model for Fireworks vision (kept separate so a text-only synth model works).
-    vision_fireworks_model: str = "accounts/fireworks/models/gemma-4-31b-it"
+    # Text synthesis model for the Fireworks path. NOTE (verified Jul 2026): Gemma is NOT
+    # available on Fireworks serverless / Fire Pass (returns 404) — Fire Pass grants GLM 5.2
+    # Fast + Kimi only. For Gemma (and the "Best AMD-Hosted Gemma" prize) use SYNTHESIZER=amd
+    # to self-host Gemma on the MI300X via vLLM (amd_llm_model below).
+    synth_model: str = "accounts/fireworks/routers/glm-5p2-fast"
+    # Multimodal model for VISION=fireworks. No multimodal model is available on Fire Pass, so
+    # on this plan use VISION=local (Qwen2.5-VL on the MI300X) or VISION=none instead.
+    vision_fireworks_model: str = "accounts/fireworks/routers/glm-5p2-fast"
 
     # ── AMD-hosted Gemma via local vLLM (OpenAI-compatible) ──────────────────
     amd_llm_base_url: str = "http://localhost:8001/v1"

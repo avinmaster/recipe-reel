@@ -28,11 +28,12 @@ in real cooking videos the amounts are shown as **on-screen text**, not spoken. 
 | --- | --- | --- |
 | 🎙️ **Speech** (Whisper-large-v3) | **AMD MI300X · ROCm** | the *steps*, technique, ordering (timestamped) |
 | 👁️ **Vision + on-screen text** (Qwen2.5-VL) | **AMD MI300X · ROCm** | the *exact quantities*, ingredients, plating |
-| 🧠 **Reasoning** (Gemma 4 on Fireworks AI) | AMD-hosted Fireworks | fuse + structure into one validated recipe |
+| 🧠 **Reasoning** (Gemma, self-hosted on **MI300X · vLLM**) | **AMD GPU** | fuse + structure into one validated recipe |
 
-Heavy perception runs on the **AMD GPU**; the final structured synthesis uses **Gemma**
-(competing for the hackathon's *Best AMD-Hosted Gemma Project* prize). Quantities are left
-`null` rather than invented, and every field is flagged spoken / on-screen / inferred.
+Heavy perception *and* the Gemma reasoning run on the **AMD GPU** — self-hosting Gemma via
+vLLM competes for the hackathon's *Best AMD-Hosted Gemma Project* prize. (A Fireworks fast
+model such as GLM 5.2 Fast is a drop-in alternative for the reasoning step.) Quantities are
+left `null` rather than invented, and every field is flagged spoken / on-screen / inferred.
 
 ## Quickstart
 
@@ -109,7 +110,8 @@ deep-linked to the video, plus a schema.org export. See
 URL / file ─► ingest (yt-dlp) ─► audio (ffmpeg) ─┬─► ASR  Whisper-large-v3   (MI300X/ROCm)
                                 └─► keyframes ────┴─► VLM  Qwen2.5-VL          (MI300X/ROCm)
                                                        │
-                              fuse ► Gemma 4 (Fireworks, json_schema) ► validate ► store ► API
+                fuse ► Gemma on MI300X (vLLM, json_schema)  ► validate ► store ► API
+                       └ or a Fireworks fast model (GLM 5.2) as a drop-in
 ```
 
 Every stage is a pluggable provider with a `mock` implementation and CPU fallback, so the
