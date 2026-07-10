@@ -50,7 +50,7 @@
 - [ ] **Cover image**
 - [ ] **Video presentation** (demo video — record a run: paste a cooking video URL → watch the recipe build)
 - [ ] **Slide presentation** (pitch deck — problem, solution, AMD usage, market)
-- [ ] **Public GitHub repository** — ⚠️ currently PRIVATE (`avinmaster/recipe-reel`). **Flip to public before submitting.**
+- [x] **Public GitHub repository** — https://github.com/avinmaster/recipe-reel (already public).
 - [ ] **Demo application platform + Application URL** — deploy the API (and the separate frontend)
 
 ## Hard requirements (from the rules)
