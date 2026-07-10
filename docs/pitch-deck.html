@@ -1,0 +1,387 @@
+<title>RecipeReel — Pitch Deck</title>
+<style>
+  :root{
+    /* dark = default: "kitchen at night" */
+    --bg:#14100C; --bg2:#1B1611; --surface:#211A14; --surface2:#2A2119;
+    --text:#EFE7DA; --muted:#AC9E8B; --faint:#7C7062;
+    --accent:#F2703E;      /* paprika */
+    --accent-ink:#14100C;
+    --basil:#77BE92;       /* on-screen / verified */
+    --line:rgba(239,231,218,.12);
+    --line-strong:rgba(239,231,218,.22);
+    --shadow:0 24px 60px -24px rgba(0,0,0,.7);
+    --font-display:"Helvetica Neue",Helvetica,Arial,system-ui,sans-serif;
+    --font-body:Georgia,"Iowan Old Style","Times New Roman",serif;
+    --font-mono:ui-monospace,"SF Mono","Cascadia Code","JetBrains Mono",Menlo,Consolas,monospace;
+  }
+  @media (prefers-color-scheme: light){
+    :root{
+      --bg:#F4F1E9; --bg2:#EFEBE1; --surface:#FBF9F3; --surface2:#F1ECE1;
+      --text:#221B13; --muted:#6C5F4F; --faint:#93887A;
+      --accent:#CF4A1E; --accent-ink:#FFF;
+      --basil:#2E7A4E;
+      --line:rgba(34,27,19,.12); --line-strong:rgba(34,27,19,.2);
+      --shadow:0 24px 50px -28px rgba(60,40,20,.4);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#14100C; --bg2:#1B1611; --surface:#211A14; --surface2:#2A2119;
+    --text:#EFE7DA; --muted:#AC9E8B; --faint:#7C7062;
+    --accent:#F2703E; --accent-ink:#14100C; --basil:#77BE92;
+    --line:rgba(239,231,218,.12); --line-strong:rgba(239,231,218,.22);
+    --shadow:0 24px 60px -24px rgba(0,0,0,.7);
+  }
+  :root[data-theme="light"]{
+    --bg:#F4F1E9; --bg2:#EFEBE1; --surface:#FBF9F3; --surface2:#F1ECE1;
+    --text:#221B13; --muted:#6C5F4F; --faint:#93887A;
+    --accent:#CF4A1E; --accent-ink:#FFF; --basil:#2E7A4E;
+    --line:rgba(34,27,19,.12); --line-strong:rgba(34,27,19,.2);
+    --shadow:0 24px 50px -28px rgba(60,40,20,.4);
+  }
+
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font-body);
+    -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+
+  .deck{scroll-snap-type:y mandatory;height:100vh;overflow-y:auto;overflow-x:hidden}
+  .slide{scroll-snap-align:start;min-height:100vh;display:flex;flex-direction:column;
+    justify-content:center;padding:clamp(28px,6vw,96px);position:relative;
+    border-bottom:1px solid var(--line)}
+  .wrap{width:min(1080px,100%);margin:0 auto;width:100%}
+
+  /* type system */
+  .eyebrow{font-family:var(--font-mono);font-size:12px;letter-spacing:.22em;text-transform:uppercase;
+    color:var(--faint);display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+  .eyebrow b{color:var(--accent);font-weight:600}
+  h1,h2,h3{font-family:var(--font-display);font-weight:800;letter-spacing:-.02em;
+    text-wrap:balance;margin:0;line-height:1.02}
+  h1{font-size:clamp(44px,8.5vw,104px)}
+  h2{font-size:clamp(30px,5vw,60px);line-height:1.04}
+  .lead{font-size:clamp(19px,2.4vw,27px);line-height:1.5;color:var(--muted);max-width:64ch;
+    margin:0}
+  p{line-height:1.6}
+  .accent{color:var(--accent)}
+  .basil{color:var(--basil)}
+  .mono{font-family:var(--font-mono)}
+
+  /* filmstrip motif */
+  .strip{display:flex;gap:6px;margin:0 0 26px}
+  .strip i{width:26px;height:16px;border-radius:3px;background:var(--surface2);
+    border:1px solid var(--line-strong);flex:0 0 auto}
+  .strip i.on{background:var(--accent)}
+
+  .grid{display:grid;gap:22px}
+  .cols-2{grid-template-columns:1fr 1fr}
+  .cols-3{grid-template-columns:repeat(3,1fr)}
+  @media(max-width:820px){.cols-2,.cols-3{grid-template-columns:1fr}}
+
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:16px;
+    padding:24px;box-shadow:var(--shadow)}
+  .card h3{font-size:20px;margin-bottom:8px}
+  .card p{color:var(--muted);font-size:15px;margin:0}
+
+  .tag{font-family:var(--font-mono);font-size:12px;letter-spacing:.04em;padding:5px 10px;
+    border:1px solid var(--line-strong);border-radius:999px;color:var(--muted);white-space:nowrap}
+  .tags{display:flex;gap:8px;flex-wrap:wrap}
+
+  .num{font-family:var(--font-mono);color:var(--accent);font-size:13px;font-weight:600}
+
+  /* recipe card */
+  .recipe{background:var(--surface);border:1px solid var(--line-strong);border-radius:18px;
+    overflow:hidden;box-shadow:var(--shadow)}
+  .recipe .head{padding:20px 22px;border-bottom:1px solid var(--line);
+    background:linear-gradient(180deg,var(--surface2),transparent)}
+  .recipe .head h3{font-size:23px;margin:0 0 6px}
+  .recipe .meta{display:flex;gap:16px;flex-wrap:wrap;font-family:var(--font-mono);font-size:12px;color:var(--muted)}
+  .recipe .body{display:grid;grid-template-columns:.9fr 1.3fr;gap:0}
+  @media(max-width:640px){.recipe .body{grid-template-columns:1fr}}
+  .recipe .ing{padding:18px 22px;border-right:1px solid var(--line)}
+  @media(max-width:640px){.recipe .ing{border-right:0;border-bottom:1px solid var(--line)}}
+  .recipe .steps{padding:18px 22px}
+  .recipe .lbl{font-family:var(--font-mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--faint);margin:0 0 12px}
+  .ing ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:9px}
+  .ing li{display:flex;gap:10px;align-items:baseline;font-size:14px;line-height:1.3}
+  .qty{font-family:var(--font-mono);color:var(--basil);font-size:13px;min-width:54px;flex:0 0 auto}
+  .steps ol{list-style:none;margin:0;padding:0;counter-reset:s;display:flex;flex-direction:column;gap:12px}
+  .steps li{display:flex;gap:12px;font-size:14px;line-height:1.4}
+  .tc{font-family:var(--font-mono);font-size:11px;color:var(--accent);border:1px solid var(--line-strong);
+    border-radius:6px;padding:2px 6px;height:fit-content;flex:0 0 auto}
+
+  /* pipeline */
+  .pipe{display:flex;align-items:stretch;gap:14px;flex-wrap:wrap}
+  .stage{flex:1 1 140px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px}
+  .stage .k{font-family:var(--font-mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--faint)}
+  .stage h4{margin:8px 0 4px;font-family:var(--font-display);font-size:16px;letter-spacing:-.01em}
+  .stage p{margin:0;color:var(--muted);font-size:13px;line-height:1.4}
+  .stage.gpu{border-color:color-mix(in srgb,var(--accent) 55%,var(--line));
+    background:color-mix(in srgb,var(--accent) 8%,var(--surface))}
+  .stage.gpu .badge{display:inline-block;margin-top:10px;font-family:var(--font-mono);font-size:10px;
+    letter-spacing:.08em;color:var(--accent-ink);background:var(--accent);border-radius:6px;padding:3px 7px}
+
+  .stat{display:flex;flex-direction:column;gap:4px}
+  .stat b{font-family:var(--font-display);font-size:clamp(30px,4vw,46px);letter-spacing:-.02em;line-height:1}
+  .stat span{color:var(--muted);font-size:13px;font-family:var(--font-mono);letter-spacing:.03em}
+
+  .rows{display:flex;flex-direction:column;gap:14px}
+  .row{display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:start;
+    padding-bottom:14px;border-bottom:1px solid var(--line)}
+  .row:last-child{border-bottom:0}
+  .row .mk{font-family:var(--font-mono);color:var(--accent);font-size:13px;padding-top:2px}
+  .row h4{margin:0 0 3px;font-family:var(--font-display);font-size:17px;letter-spacing:-.01em}
+  .row p{margin:0;color:var(--muted);font-size:14px;line-height:1.45}
+
+  .ok{color:var(--basil);font-family:var(--font-mono);font-size:13px}
+
+  /* nav */
+  .hud{position:fixed;right:18px;bottom:16px;display:flex;gap:10px;align-items:center;z-index:20}
+  .hud button{font-family:var(--font-mono);font-size:12px;color:var(--text);background:var(--surface);
+    border:1px solid var(--line-strong);border-radius:999px;padding:7px 12px;cursor:pointer}
+  .hud button:hover{border-color:var(--accent);color:var(--accent)}
+  .hud .count{font-family:var(--font-mono);font-size:12px;color:var(--muted);
+    background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:7px 12px}
+  .dots{position:fixed;left:16px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:9px;z-index:20}
+  .dots a{width:9px;height:9px;border-radius:50%;background:var(--line-strong);transition:.2s}
+  .dots a.active{background:var(--accent);transform:scale(1.35)}
+  :focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:4px}
+
+  .foot{position:absolute;left:clamp(28px,6vw,96px);bottom:22px;font-family:var(--font-mono);
+    font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint)}
+
+  @media print{
+    .hud,.dots{display:none}
+    .deck{height:auto;overflow:visible}
+    .slide{min-height:auto;page-break-after:always;border:0;padding:8vh 6vw}
+    body{background:#fff;color:#000}
+  }
+</style>
+
+<main class="deck" id="deck">
+
+  <!-- 1 · COVER -->
+  <section class="slide" id="s1">
+    <div class="wrap">
+      <div class="strip" aria-hidden="true">
+        <i></i><i class="on"></i><i></i><i></i><i class="on"></i><i></i><i></i><i class="on"></i><i></i><i></i>
+      </div>
+      <div class="eyebrow">AMD Developer Hackathon · Act II &nbsp;·&nbsp; <b>Track 3 — Unicorn</b></div>
+      <h1 style="margin:18px 0 0">Recipe<span class="accent">Reel</span></h1>
+      <p class="lead" style="margin-top:20px;font-size:clamp(20px,2.6vw,30px);color:var(--text)">
+        Turn any cooking video into a <span class="accent">perfect, structured recipe.</span>
+      </p>
+      <div class="tags" style="margin-top:26px">
+        <span class="tag">AMD Instinct MI300X</span>
+        <span class="tag">ROCm</span>
+        <span class="tag">Gemma</span>
+        <span class="tag">Fireworks AI</span>
+        <span class="tag">Whisper · Qwen2.5-VL</span>
+      </div>
+    </div>
+    <div class="foot">github.com/avinmaster/recipe-reel</div>
+  </section>
+
+  <!-- 2 · PROBLEM -->
+  <section class="slide" id="s2">
+    <div class="wrap grid cols-2" style="align-items:center">
+      <div>
+        <div class="eyebrow"><span class="num">01</span> The problem</div>
+        <h2 style="margin-top:16px">You found the recipe.<br>It's trapped in a <span class="accent">12-minute video.</span></h2>
+      </div>
+      <div class="rows">
+        <div class="row"><div class="mk">↺</div><div><h4>You scrub back and forth</h4><p>Pausing every few seconds to catch the next step, losing your place, burning the onions.</p></div></div>
+        <div class="row"><div class="mk">⏱</div><div><h4>The amounts flash for two seconds</h4><p>“2 cups” appears as on-screen text, then it's gone. Was it 2 or 2½? Cups or ounces?</p></div></div>
+        <div class="row"><div class="mk">⌕</div><div><h4>None of it is usable</h4><p>You can't search it, scale it, shop it, or save it. Hundreds of millions of cooking videos — and not one is machine-readable.</p></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3 · SOLUTION -->
+  <section class="slide" id="s3">
+    <div class="wrap">
+      <div class="eyebrow"><span class="num">02</span> The solution</div>
+      <h2 style="margin:14px 0 6px">RecipeReel watches the video<br>and <span class="accent">writes the recipe.</span></h2>
+      <p class="lead" style="margin-bottom:26px">Paste a link — YouTube, TikTok, a Reel — or upload a file. Get back one clean, structured recipe.</p>
+
+      <div class="recipe">
+        <div class="head">
+          <h3>One-Pan Garlic Butter Shrimp Pasta</h3>
+          <div class="meta"><span>PREP 5m</span><span>COOK 15m</span><span>TOTAL 20m</span><span>SERVES 4</span><span class="basil">confidence 0.86</span></div>
+        </div>
+        <div class="body">
+          <div class="ing">
+            <p class="lbl">Ingredients · quantities from on-screen text</p>
+            <ul>
+              <li><span class="qty">12 oz</span> linguine</li>
+              <li><span class="qty">1 lb</span> large shrimp <span style="color:var(--faint)">· peeled</span></li>
+              <li><span class="qty">4 tbsp</span> butter</li>
+              <li><span class="qty">5 clove</span> garlic <span style="color:var(--faint)">· minced</span></li>
+              <li><span class="qty">½ cup</span> dry white wine</li>
+              <li><span class="qty">½ cup</span> parmesan</li>
+              <li><span class="qty" style="color:var(--faint)">— </span>salt &amp; pepper <span style="color:var(--faint)">· to taste</span></li>
+            </ul>
+          </div>
+          <div class="steps">
+            <p class="lbl">Steps · each deep-links to the exact second</p>
+            <ol>
+              <li><span class="tc">00:12</span><span>Boil salted water; cook linguine to al dente, reserve pasta water.</span></li>
+              <li><span class="tc">00:36</span><span>Melt butter over medium heat; add garlic until fragrant.</span></li>
+              <li><span class="tc">00:48</span><span>Add shrimp; ~2 min per side until pink.</span></li>
+              <li><span class="tc">01:02</span><span>Deglaze with white wine + lemon; reduce one minute.</span></li>
+              <li><span class="tc">01:26</span><span>Toss pasta in; finish with parmesan, parsley, chili flakes.</span></li>
+            </ol>
+          </div>
+        </div>
+      </div>
+      <p class="mono" style="color:var(--faint);font-size:12px;margin-top:16px">
+        → also emits schema.org/Recipe JSON-LD · nutrition estimate · equipment list · per-field provenance
+      </p>
+    </div>
+  </section>
+
+  <!-- 4 · INSIGHT -->
+  <section class="slide" id="s4">
+    <div class="wrap">
+      <div class="eyebrow"><span class="num">03</span> The insight everyone misses</div>
+      <h2 style="margin:14px 0 8px">The amounts are never spoken.<br>They're <span class="basil">on the screen.</span></h2>
+      <p class="lead" style="margin-bottom:30px">Transcript-only tools guess quantities and get them wrong. RecipeReel fuses three signals — and never invents a number.</p>
+      <div class="grid cols-3">
+        <div class="card"><div class="mono" style="color:var(--accent);font-size:13px">SPEECH →</div><h3>The steps</h3><p>Narration gives the actions, technique, and ordering. Whisper transcribes it with timestamps.</p></div>
+        <div class="card" style="border-color:color-mix(in srgb,var(--basil) 45%,var(--line))"><div class="mono basil" style="font-size:13px">ON-SCREEN →</div><h3>The quantities</h3><p>The authoritative amounts live in overlay cards. A vision model reads them verbatim.</p></div>
+        <div class="card"><div class="mono" style="color:var(--accent);font-size:13px">TIME →</div><h3>The deep links</h3><p>Every step is pinned to the exact second, so a tap jumps you into the video.</p></div>
+      </div>
+      <p class="mono" style="margin-top:22px;color:var(--muted);font-size:13px">
+        Unknown amount? <span class="accent">quantity = null</span>, not a hallucination.
+      </p>
+    </div>
+  </section>
+
+  <!-- 5 · HOW IT WORKS -->
+  <section class="slide" id="s5">
+    <div class="wrap">
+      <div class="eyebrow"><span class="num">04</span> How it works</div>
+      <h2 style="margin:14px 0 24px">Heavy perception on the GPU.<br>Structured reasoning with <span class="accent">Gemma.</span></h2>
+      <div class="pipe">
+        <div class="stage"><div class="k">Ingest</div><h4>yt-dlp + ffmpeg</h4><p>Fetch video &amp; metadata; extract audio and scene keyframes with exact timestamps.</p></div>
+        <div class="stage gpu"><div class="k">Listen</div><h4>Whisper-large-v3</h4><p>Speech → timestamped transcript.<span class="badge">AMD MI300X · ROCm</span></p></div>
+        <div class="stage gpu"><div class="k">See</div><h4>Qwen2.5-VL</h4><p>Frames → captions + on-screen text (the quantities).<span class="badge">AMD MI300X · ROCm</span></p></div>
+        <div class="stage"><div class="k">Reason</div><h4>Gemma 4</h4><p>Fuse everything → one schema-constrained Recipe (temp 0). <span class="ok">json_schema</span></p></div>
+        <div class="stage"><div class="k">Serve</div><h4>FastAPI</h4><p>Validate, persist, stream progress. REST + live SSE.</p></div>
+      </div>
+      <p class="mono" style="margin-top:20px;color:var(--faint);font-size:12px">
+        Every stage is a pluggable provider with CPU / mock fallback — the pipeline degrades, it never crashes.
+      </p>
+    </div>
+  </section>
+
+  <!-- 6 · AMD -->
+  <section class="slide" id="s6">
+    <div class="wrap grid cols-2" style="align-items:center">
+      <div>
+        <div class="eyebrow"><span class="num">05</span> Use of AMD platforms</div>
+        <h2 style="margin:14px 0 14px">Real work on <span class="accent">real silicon.</span></h2>
+        <p class="lead">The MI300X's 192&nbsp;GB holds Whisper-large-v3 <em>and</em> Qwen2.5-VL resident at once — the throughput-bound perception that justifies the hardware. Gemma does the reasoning, hosted on AMD via vLLM to compete for <span class="basil">Best AMD-Hosted Gemma</span>.</p>
+      </div>
+      <div class="grid" style="gap:18px">
+        <div class="card grid cols-3" style="gap:18px">
+          <div class="stat"><b>192<span style="font-size:.5em">GB</span></b><span>HBM3, both models resident</span></div>
+          <div class="stat"><b>2</b><span>GPU workloads: ASR + VLM</span></div>
+          <div class="stat"><b>1</b><span>codebase, CPU→MI300X</span></div>
+        </div>
+        <div class="card"><h3 class="basil" style="font-family:var(--font-display)">ROCm masquerades as CUDA</h3><p>The same <span class="mono">device="cuda"</span> code runs on a laptop, then unchanged on the MI300X. Perception on-GPU; Gemma on Fireworks or self-hosted on AMD. Nothing is faked.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7 · COMPLETENESS -->
+  <section class="slide" id="s7">
+    <div class="wrap">
+      <div class="eyebrow"><span class="num">06</span> It's built, not a mockup</div>
+      <h2 style="margin:14px 0 24px">A production-shaped backend<br>that <span class="accent">runs in one command.</span></h2>
+      <div class="grid cols-3">
+        <div class="card"><h3>Async job engine</h3><p>Queue → worker → live <span class="mono">SSE</span> progress. SQLite persistence for jobs and recipes.</p></div>
+        <div class="card"><h3>Clean REST API</h3><p>Submit URL/upload, poll, stream, fetch recipe, export <span class="mono">schema.org</span> JSON-LD. Swagger at <span class="mono">/docs</span>.</p></div>
+        <div class="card"><h3>Containerized</h3><p>Slim <span class="mono">Dockerfile</span> + an MI300X ROCm image. MIT-licensed, public repo, README.</p></div>
+        <div class="card"><h3>Pluggable providers</h3><p>Whisper / Qwen-VL / Gemma swap by env var. Missing key or GPU → graceful fallback.</p></div>
+        <div class="card"><h3>Offline demo mode</h3><p><span class="mono">MOCK_MODE=true</span> runs the whole pipeline with zero keys — the demo never hard-fails.</p></div>
+        <div class="card"><h3>Tested &amp; linted</h3><p>Pytest suite green, ruff-clean, verified end-to-end in Docker.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 8 · MARKET -->
+  <section class="slide" id="s8">
+    <div class="wrap">
+      <div class="eyebrow"><span class="num">07</span> Why it's a company</div>
+      <h2 style="margin:14px 0 22px">Every cooking video is a<br><span class="accent">product waiting to be structured.</span></h2>
+      <div class="grid cols-2">
+        <div class="rows">
+          <div class="row"><div class="mk">◆</div><div><h4>Home cooks</h4><p>Save, scale, and shop any video recipe. The consumer wedge.</p></div></div>
+          <div class="row"><div class="mk">◆</div><div><h4>Creators &amp; publishers</h4><p>Auto-generate recipe cards + schema.org rich results — instant SEO and reach from content they already made.</p></div></div>
+        </div>
+        <div class="rows">
+          <div class="row"><div class="mk">◆</div><div><h4>Grocery &amp; commerce</h4><p>Structured ingredients become a shoppable cart. The recipe is the funnel.</p></div></div>
+          <div class="row"><div class="mk">◆</div><div><h4>Platform &amp; data</h4><p>An API that makes video searchable, plus the largest structured cooking dataset as a moat.</p></div></div>
+        </div>
+      </div>
+      <p class="lead" style="margin-top:22px;color:var(--text)">The recipe-app and meal-planning market is measured in billions — and it's still built on people retyping videos by hand.</p>
+    </div>
+  </section>
+
+  <!-- 9 · CLOSE -->
+  <section class="slide" id="s9">
+    <div class="wrap">
+      <div class="strip" aria-hidden="true"><i class="on"></i><i></i><i></i><i class="on"></i><i></i><i></i><i class="on"></i><i></i><i></i><i class="on"></i></div>
+      <h1 style="margin:18px 0 10px">From reel<br>to <span class="accent">recipe.</span></h1>
+      <p class="lead" style="color:var(--text);font-size:clamp(19px,2.4vw,26px)">One paste. Real quantities, timestamped steps, and structured data — powered by AMD.</p>
+      <div class="tags" style="margin-top:30px">
+        <span class="tag">github.com/avinmaster/recipe-reel</span>
+        <span class="tag">FastAPI · Python 3.12</span>
+        <span class="tag">MI300X · ROCm · Gemma</span>
+      </div>
+      <p class="mono" style="color:var(--faint);font-size:12px;margin-top:28px">RecipeReel — AMD Developer Hackathon: Act II · Track 3 (Unicorn)</p>
+    </div>
+  </section>
+
+</main>
+
+<nav class="dots" id="dots" aria-label="Slides"></nav>
+<div class="hud">
+  <button id="prev" aria-label="Previous slide">‹ prev</button>
+  <span class="count" id="count">01 / 09</span>
+  <button id="next" aria-label="Next slide">next ›</button>
+</div>
+
+<script>
+(function(){
+  var deck=document.getElementById('deck');
+  var slides=[].slice.call(document.querySelectorAll('.slide'));
+  var dots=document.getElementById('dots');
+  var count=document.getElementById('count');
+  var cur=0;
+  slides.forEach(function(s,i){
+    var a=document.createElement('a'); a.href='#'+s.id; a.setAttribute('aria-label','Slide '+(i+1));
+    dots.appendChild(a);
+  });
+  var dotEls=[].slice.call(dots.children);
+  function pad(n){return (n<10?'0':'')+n;}
+  function setActive(i){
+    cur=Math.max(0,Math.min(slides.length-1,i));
+    dotEls.forEach(function(d,j){d.classList.toggle('active',j===cur);});
+    count.textContent=pad(cur+1)+' / '+pad(slides.length);
+  }
+  var io=new IntersectionObserver(function(es){
+    es.forEach(function(e){ if(e.isIntersecting){ setActive(slides.indexOf(e.target)); }});
+  },{threshold:.55});
+  slides.forEach(function(s){io.observe(s);});
+  function go(i){ if(slides[i]) slides[i].scrollIntoView({behavior:'smooth'}); }
+  document.getElementById('next').onclick=function(){go(cur+1);};
+  document.getElementById('prev').onclick=function(){go(cur-1);};
+  window.addEventListener('keydown',function(e){
+    if(e.key==='ArrowDown'||e.key==='ArrowRight'||e.key===' '){e.preventDefault();go(cur+1);}
+    if(e.key==='ArrowUp'||e.key==='ArrowLeft'){e.preventDefault();go(cur-1);}
+  });
+  setActive(0);
+})();
+</script>

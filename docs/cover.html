@@ -1,0 +1,76 @@
+<title>RecipeReel — Cover</title>
+<style>
+  :root{
+    --bg:#14100C; --surface:#211A14; --surface2:#2A2119;
+    --text:#EFE7DA; --muted:#AC9E8B; --faint:#7C7062;
+    --accent:#F2703E; --basil:#77BE92;
+    --line:rgba(239,231,218,.14); --line-strong:rgba(239,231,218,.24);
+    --display:"Helvetica Neue",Helvetica,Arial,system-ui,sans-serif;
+    --body:Georgia,"Times New Roman",serif;
+    --mono:ui-monospace,"SF Mono","Cascadia Code",Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:#0b0906;min-height:100vh;display:flex;align-items:center;justify-content:center;
+    font-family:var(--body);padding:20px}
+  .note{position:fixed;top:10px;left:0;right:0;text-align:center;font-family:var(--mono);
+    font-size:12px;color:#6b6157}
+  /* 1200x630 og card */
+  .cover{width:1200px;height:630px;max-width:100%;aspect-ratio:1200/630;background:
+    radial-gradient(120% 140% at 100% 0%, color-mix(in srgb,var(--accent) 16%, var(--bg)), var(--bg) 60%);
+    color:var(--text);border:1px solid var(--line-strong);border-radius:24px;overflow:hidden;
+    position:relative;padding:64px;display:flex;flex-direction:column;justify-content:space-between;
+    box-shadow:0 40px 100px -40px rgba(0,0,0,.8)}
+  .strip{display:flex;gap:8px}
+  .strip i{width:34px;height:20px;border-radius:4px;background:var(--surface2);border:1px solid var(--line-strong)}
+  .strip i.on{background:var(--accent);border-color:var(--accent)}
+  .eyebrow{font-family:var(--mono);font-size:15px;letter-spacing:.2em;text-transform:uppercase;color:var(--faint);margin-top:22px}
+  .eyebrow b{color:var(--accent);font-weight:600}
+  h1{font-family:var(--display);font-weight:800;letter-spacing:-.03em;font-size:118px;line-height:.95;margin:8px 0 0}
+  .accent{color:var(--accent)}
+  .tag-line{font-size:30px;color:var(--text);max-width:20ch;line-height:1.28;margin-top:20px}
+  .tag-line span{color:var(--muted)}
+  .row{display:flex;justify-content:space-between;align-items:flex-end;gap:20px}
+  .chips{display:flex;gap:10px;flex-wrap:wrap}
+  .chip{font-family:var(--mono);font-size:14px;color:var(--muted);border:1px solid var(--line-strong);
+    border-radius:999px;padding:8px 14px;white-space:nowrap}
+  .tc{font-family:var(--mono);font-size:15px;color:var(--accent);border:1px solid var(--line-strong);border-radius:8px;padding:6px 10px}
+  .qty{font-family:var(--mono);color:var(--basil)}
+  .card-mini{position:absolute;right:56px;top:150px;width:300px;background:color-mix(in srgb,var(--surface) 92%,transparent);
+    border:1px solid var(--line);border-radius:16px;padding:18px 20px;transform:rotate(3deg);backdrop-filter:blur(2px)}
+  .card-mini .h{font-family:var(--display);font-weight:700;font-size:17px;letter-spacing:-.01em;margin-bottom:12px}
+  .card-mini ul{list-style:none;display:flex;flex-direction:column;gap:8px;font-size:14px}
+  .card-mini li{display:flex;gap:10px}
+  .card-mini .qty{min-width:52px}
+</style>
+
+<div class="note">↓ Screenshot the card below at 1200×630 for the lablab cover image</div>
+
+<div class="cover">
+  <div>
+    <div class="strip" aria-hidden="true"><i></i><i class="on"></i><i></i><i></i><i class="on"></i><i></i><i></i><i class="on"></i><i></i></div>
+    <div class="eyebrow">AMD Developer Hackathon · Act II &nbsp;·&nbsp; <b>Track 3 — Unicorn</b></div>
+    <h1>Recipe<span class="accent">Reel</span></h1>
+    <p class="tag-line">Turn any cooking video into a <span class="accent">perfect, structured recipe.</span> <span>Real quantities. Timestamped steps.</span></p>
+  </div>
+
+  <div class="card-mini" aria-hidden="true">
+    <div class="h">Garlic Butter Shrimp Pasta</div>
+    <ul>
+      <li><span class="qty">12 oz</span> linguine</li>
+      <li><span class="qty">1 lb</span> shrimp</li>
+      <li><span class="qty">4 tbsp</span> butter</li>
+      <li><span class="qty">5 clove</span> garlic</li>
+      <li style="margin-top:4px;color:var(--accent);font-family:var(--mono);font-size:12px">▷ step @ 00:48</li>
+    </ul>
+  </div>
+
+  <div class="row">
+    <div class="chips">
+      <span class="chip">AMD Instinct MI300X</span>
+      <span class="chip">ROCm</span>
+      <span class="chip">Gemma</span>
+      <span class="chip">Fireworks AI</span>
+    </div>
+    <div class="tc">github.com/avinmaster/recipe-reel</div>
+  </div>
+</div>

@@ -3,6 +3,30 @@
 **Deadline:** July 11, 2026 (exact hour shown in your local timezone on the event's
 **Event Schedule** tab — verify it while logged in). Submit on lablab.ai.
 
+> ⚠️ **YOU submit the lablab form and manage the team — Claude will not do either.**
+
+## 🟢 Status (autonomous session, night of Jul 10→11)
+- **Repo is PUBLIC:** https://github.com/avinmaster/recipe-reel (MIT, README, Dockerfile, tests).
+- **Pitch deck (9 slides, print→PDF ready):** https://claude.ai/code/artifact/cc363a5d-4bc7-47e5-8958-5409b8c11945
+- **Cover image (1200×630, screenshot it):** https://claude.ai/code/artifact/25cdd81e-4737-4afe-9519-8002fec49ccd
+- **Fireworks $50 credits: DONE.** Coupon `FW-LABLAB-SEN8` (from your AMD email) was redeemed at
+  app.fireworks.ai/fire-pass → **Credits: $50.00** live on account `oybek-odilov-dev-rsf`.
+  Gemma (`gemma-4-31b-it`) is now usable serverless (multimodal).
+- **⏳ ONE manual step for you:** create the API key (the dashboard's create-key modal wouldn't
+  cooperate with automation). At https://app.fireworks.ai/settings/users/api-keys →
+  **Create API Key → API Key** → copy it → paste into `.env` as `FIREWORKS_API_KEY=...`.
+  Then a **real run works immediately** (this project box already has ffmpeg + yt-dlp):
+  ```bash
+  # laptop / no GPU — Gemma does vision + synthesis via Fireworks:
+  FIREWORKS_API_KEY=... VISION=fireworks SYNTHESIZER=fireworks TRANSCRIBER=mock \
+    uvicorn app.main:app
+  ./scripts/demo.sh "https://www.youtube.com/watch?v=<a short cooking video>"
+  ```
+  On the AMD MI300X pod, use `TRANSCRIBER=local VISION=local` for the full on-GPU story
+  (note: the AMD notebook cloud had an outage tonight — retry when it's back).
+- **Still needs you:** record the demo video (with voiceover — organizers confirmed it should
+  have one) and export the deck to PDF, then submit on lablab.
+
 ## lablab form fields
 - [ ] **Project Title** — RecipeReel
 - [ ] **Short description** — *Turn any cooking video into a perfect, structured recipe — ingredients with real quantities, timestamped steps, and nutrition.*
