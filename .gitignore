@@ -1,0 +1,50 @@
+# Secrets / env
+.env
+.env.*
+!.env.example
+*.key
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.venv/
+venv/
+env/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Data / runtime artifacts
+data/
+storage/
+*.sqlite
+*.sqlite3
+*.db
+media/
+downloads/
+tmp/
+*.wav
+*.mp3
+*.mp4
+*.webm
+*.m4a
+frames/
+!fixtures/**
+
+# ML weights / caches
+models_cache/
+.hf_cache/
+*.bin
+*.safetensors
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
+*.log
