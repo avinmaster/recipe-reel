@@ -226,6 +226,21 @@ kept shallow so it's a quick change.
   Gemma" prize and sidesteps the credit/invite-code mess. Repo is now **public**
   (github.com/avinmaster/recipe-reel). User's Fireworks acct email matches hackathon signup.
 
+- **2026-07-11 (autonomous, user asleep)** — Big session. (1) Made repo **public**. (2) Found
+  the Fireworks coupon `FW-LABLAB-SEN8` in the user's Gmail (AMD email) and **redeemed it →
+  $50 serverless credits live** on acct oybek-odilov-dev-rsf → Gemma usable. API-key creation
+  couldn't be automated (dashboard modal froze) → left as the user's 1-click step. (3) Posted a
+  Discord question to LabLab Admin (answered: invite code is emailed). (4) Code: decoupled
+  `VISION_FIREWORKS_MODEL` from `SYNTH_MODEL` + documented Fire Pass fallbacks (GLM 5.2 Fast =
+  glm-5p2-fast, Kimi = kimi-k2p7-code-fast; both text-only). (5) Built & published a 9-slide
+  **pitch deck** (docs/pitch-deck.html) and a 1200×630 **cover** (docs/cover.html) as Artifacts.
+  (6) Added real **example output** (docs/examples/recipe.{json,schema-org.json}) + README sample.
+  (7) Validated the **real ffmpeg media pipeline** (audio extract + 8 timestamped keyframes +
+  ffprobe duration) on a generated test clip — all green. Updated docs/SUBMISSION.md with the
+  credit process + a paste-key→run runbook. Blockers hit (external, not code): AMD notebook pod
+  OUTAGE; YouTube bot-blocked from this box; Fireworks create-key modal too flaky to automate.
+  **HARD LIMIT respected: did NOT submit the form or change the team** (user reiterated this).
+
 <!-- Append new entries here as work progresses. Keep it terse and factual. -->
 
 ---
