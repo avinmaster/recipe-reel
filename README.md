@@ -80,6 +80,29 @@ docker run -p 8000:8000 --env-file .env recipereel
 
 Interactive docs at `/docs` once running.
 
+## Example output
+
+A real run returns a fully structured recipe — quantities sourced from on-screen text, steps
+deep-linked to the video, plus a schema.org export. See
+[`docs/examples/recipe.json`](./docs/examples/recipe.json) and
+[`docs/examples/recipe.schema-org.json`](./docs/examples/recipe.schema-org.json).
+
+```jsonc
+{
+  "title": "One-Pan Garlic Butter Shrimp Pasta",
+  "total_time_minutes": 20, "servings": "4 servings", "confidence": 0.86,
+  "ingredients": [
+    { "name": "linguine", "quantity": 12, "unit": "oz", "source": "on_screen" },
+    { "name": "salt", "quantity": null, "notes": "to taste", "source": "spoken" }  // never guessed
+  ],
+  "steps": [
+    { "number": 3, "instruction": "Melt butter; add garlic until fragrant.",
+      "start_time_seconds": 36.0, "temperature": "medium heat" }   // ← jump to 0:36 in the video
+  ],
+  "processing": { "transcriber": "...", "vision": "...", "synthesizer": "...", "device": "cuda" }
+}
+```
+
 ## Architecture
 
 ```
