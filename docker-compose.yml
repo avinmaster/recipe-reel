@@ -1,0 +1,19 @@
+# Local dev / demo. `docker compose up` serves the API on :8000 (mock mode by
+# default — no keys needed). Provide a .env to switch on real providers.
+services:
+  api:
+    build: .
+    image: recipereel:latest
+    ports:
+      - "8000:8000"
+    environment:
+      MOCK_MODE: "${MOCK_MODE:-true}"
+      DATA_DIR: /data
+    env_file:
+      - path: .env
+        required: false
+    volumes:
+      - recipereel-data:/data
+
+volumes:
+  recipereel-data:

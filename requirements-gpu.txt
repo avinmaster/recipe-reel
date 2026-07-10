@@ -1,0 +1,18 @@
+# GPU / heavy-perception extras — install on the AMD Developer Cloud MI300X pod.
+# torch/torchaudio come from the ROCm wheel index (NOT pinned here so they also
+# resolve on a laptop). Install torch FIRST with the ROCm index, then this file:
+#
+#   pip install torch torchaudio --index-url https://download.pytorch.org/whl/rocm6.4
+#   pip install -r requirements-gpu.txt
+#
+# On MI300X, torch.cuda.is_available() == True and device string is "cuda"
+# (ROCm/HIP masquerades as CUDA — same code path, no special-casing).
+
+transformers==4.48.0     # Whisper-large-v3 ASR + Qwen2.5-VL (pure PyTorch → ROCm-ready)
+accelerate==1.2.1
+qwen-vl-utils==0.0.8     # Qwen2.5-VL frame/video preprocessing helper
+Pillow==11.1.0           # frame image handling
+soundfile==0.13.0        # audio IO for Whisper
+
+# Optional: deterministic ingredient qty/unit re-validation
+# ingredient-parser-nlp==2.0.0

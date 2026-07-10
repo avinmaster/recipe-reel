@@ -1,0 +1,61 @@
+{
+  "title": "One-Pan Garlic Butter Shrimp Pasta",
+  "description": "Succulent shrimp in a silky garlic-butter and white wine sauce tossed with linguine — a restaurant-worthy dinner in about 20 minutes, all in one pan.",
+  "cuisine": "Italian-American",
+  "category": "main course",
+  "tags": ["pasta", "shrimp", "seafood", "quick dinner", "one-pan"],
+  "servings": "4 servings",
+  "servings_count": 4,
+  "difficulty": "easy",
+  "prep_time_minutes": 5,
+  "cook_time_minutes": 15,
+  "total_time_minutes": 20,
+  "ingredients": [
+    {"name": "linguine", "quantity": 12, "unit": "oz", "notes": null, "group": null, "optional": false, "raw_text": "12 oz linguine", "source": "on_screen"},
+    {"name": "large shrimp", "quantity": 1, "unit": "lb", "notes": "peeled and deveined", "group": null, "optional": false, "raw_text": "1 lb large shrimp", "source": "on_screen"},
+    {"name": "butter", "quantity": 4, "unit": "tbsp", "notes": null, "group": null, "optional": false, "raw_text": "4 tbsp butter", "source": "on_screen"},
+    {"name": "garlic", "quantity": 5, "unit": "clove", "notes": "minced", "group": null, "optional": false, "raw_text": "5 cloves garlic", "source": "on_screen"},
+    {"name": "dry white wine", "quantity": 0.5, "unit": "cup", "notes": null, "group": null, "optional": false, "raw_text": "1/2 cup dry white wine", "source": "on_screen"},
+    {"name": "lemon", "quantity": 1, "unit": null, "notes": "juiced", "group": null, "optional": false, "raw_text": "1 lemon", "source": "on_screen"},
+    {"name": "parmesan cheese", "quantity": 0.5, "unit": "cup", "notes": "grated", "group": null, "optional": false, "raw_text": "1/2 cup parmesan", "source": "on_screen"},
+    {"name": "fresh parsley", "quantity": 0.25, "unit": "cup", "notes": "chopped", "group": null, "optional": false, "raw_text": "1/4 cup parsley", "source": "on_screen"},
+    {"name": "red pepper flakes", "quantity": 0.5, "unit": "tsp", "notes": null, "group": null, "optional": true, "raw_text": "1/2 tsp red pepper flakes", "source": "on_screen"},
+    {"name": "salt", "quantity": null, "unit": null, "notes": "to taste", "group": null, "optional": false, "raw_text": "salt", "source": "spoken"},
+    {"name": "black pepper", "quantity": null, "unit": null, "notes": "to taste", "group": null, "optional": false, "raw_text": "pepper", "source": "spoken"},
+    {"name": "reserved pasta water", "quantity": null, "unit": null, "notes": "a splash", "group": null, "optional": false, "raw_text": "a splash of pasta water", "source": "spoken"}
+  ],
+  "equipment": [
+    {"name": "large pot", "notes": "for boiling the pasta"},
+    {"name": "large skillet", "notes": null},
+    {"name": "tongs", "notes": null}
+  ],
+  "steps": [
+    {"number": 1, "instruction": "Bring a large pot of salted water to a boil and cook the linguine until al dente. Reserve some pasta water, then drain.", "start_time_seconds": 12.0, "duration_minutes": 10.0, "temperature": null, "ingredients_used": ["linguine", "salt"], "tip": "Reserve a cup of starchy pasta water before draining."},
+    {"number": 2, "instruction": "Pat the shrimp dry and season with salt and pepper.", "start_time_seconds": 25.0, "duration_minutes": null, "temperature": null, "ingredients_used": ["large shrimp", "salt", "black pepper"], "tip": "Drying the shrimp helps them sear instead of steam."},
+    {"number": 3, "instruction": "Melt the butter in a large skillet over medium heat, then add the garlic and cook until fragrant.", "start_time_seconds": 36.0, "duration_minutes": 1.0, "temperature": "medium heat", "ingredients_used": ["butter", "garlic"], "tip": null},
+    {"number": 4, "instruction": "Add the shrimp and cook about 2 minutes per side, until pink and opaque.", "start_time_seconds": 48.0, "duration_minutes": 4.0, "temperature": null, "ingredients_used": ["large shrimp"], "tip": "Pull the shrimp as soon as they turn pink so they stay tender."},
+    {"number": 5, "instruction": "Pour in the white wine and lemon juice and let the sauce reduce for about a minute.", "start_time_seconds": 62.0, "duration_minutes": 1.0, "temperature": null, "ingredients_used": ["dry white wine", "lemon"], "tip": null},
+    {"number": 6, "instruction": "Add the drained pasta straight into the skillet with a splash of reserved pasta water and toss to coat.", "start_time_seconds": 74.0, "duration_minutes": null, "temperature": null, "ingredients_used": ["linguine", "reserved pasta water"], "tip": null},
+    {"number": 7, "instruction": "Finish with parmesan, fresh parsley, and a pinch of red pepper flakes. Serve immediately.", "start_time_seconds": 86.0, "duration_minutes": null, "temperature": null, "ingredients_used": ["parmesan cheese", "fresh parsley", "red pepper flakes"], "tip": null}
+  ],
+  "tips": [
+    "Reserve a cup of starchy pasta water before draining — it helps the sauce cling to the pasta.",
+    "Don't overcook the shrimp; pull them from the heat as soon as they turn opaque and pink."
+  ],
+  "nutrition": {
+    "calories": 560,
+    "protein_g": 34,
+    "carbs_g": 62,
+    "fat_g": 18,
+    "fiber_g": 3,
+    "sugar_g": 3,
+    "sodium_mg": 720,
+    "is_estimate": true,
+    "basis": "per serving, estimated from ingredients"
+  },
+  "language": "en",
+  "confidence": 0.86,
+  "warnings": [
+    "Salt and pepper are to taste; exact amounts were not specified in the video."
+  ]
+}

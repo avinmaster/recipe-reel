@@ -112,7 +112,17 @@ INPUT: URL or uploaded file
 - `Transcriber`: `local` (transformers Whisper, ROCm/CPU) · `mock`.
 - `VisionAnalyzer`: `local` (Qwen2.5-VL, ROCm/CPU) · `fireworks` (Gemma multimodal) ·
   `none` · `mock`.
-- `Synthesizer`: `fireworks` (Gemma, json_schema) · `mock`.
+- `Synthesizer`: `fireworks` (Gemma via Fireworks) · `amd` (Gemma via **local vLLM on
+  MI300X/ROCm**) · `mock`. Both real profiles share ONE OpenAI-compatible code path — only
+  `base_url` / `model` / `api_key` differ.
+
+### 🏆 Targeting the Track-3 Gemma prize ("Best AMD-*Hosted* Gemma Project", $2k)
+The name says **hosted** — implying Gemma should run on **AMD compute**, not merely be called
+via Fireworks. So the strongest submission serves **Gemma on the MI300X via vLLM (ROCm,
+OpenAI-compatible)** and points the synthesizer at it (`SYNTHESIZER=amd`). Keep `fireworks`
+as the reliable default/demo path. Because vLLM speaks the OpenAI API, switching is just a
+config change. Deadline is July 11 (exact hour shown per-user in the lablab "Event Schedule"
+tab — not published as a fixed time; verify while logged in).
 
 **Config routes it:** default on the MI300X pod = perception local (GPU) + synthesis on
 Fireworks Gemma. On a laptop / no key / CI = mock or CPU. `MOCK_MODE=true` runs the whole
@@ -188,6 +198,20 @@ kept shallow so it's a quick change.
   User confirmed: repo under GitHub `avinmaster` (private now → public at submission), has a
   Fireworks key (real calls behind env vars), scope = Advanced.
   Scaffolding created; CLAUDE.md written. Next: implement backend.
+
+- **2026-07-11** — Backend v0.1 built & verified. FastAPI app with async job worker + SSE,
+  SQLite store, pluggable providers (transcribe: local-whisper/mock; vision: local-qwen-vl/
+  fireworks-gemma/none/mock; synth: fireworks/amd-vllm/mock), full Recipe model with
+  provenance + per-step video timestamps + schema.org JSON-LD export, ingredient
+  dedupe/unit-normalization post-processing. Endpoints: POST /recipes (+/upload), GET
+  /jobs/{id}(+/events SSE), GET /recipes/{id}(+/schema-org), /health, /api/v1/meta. Mock mode
+  runs the whole pipeline offline from bundled fixtures (garlic-butter-shrimp-pasta). Added
+  Dockerfile (slim) + Dockerfile.rocm (MI300X) + compose + Makefile + demo/serve scripts +
+  tests (11 passing) + docs/ARCHITECTURE.md + docs/SUBMISSION.md. Verified: pytest green,
+  ruff clean, `docker run` serves a recipe end-to-end. Fixed a container DB-path bug
+  (sqlite parent dir now auto-created; DATABASE_URL pinned to DATA_DIR in images).
+  TODO for user: run perception on the MI300X pod; add FIREWORKS_API_KEY to .env; record
+  demo video + slides; **flip repo to public before submitting**.
 
 <!-- Append new entries here as work progresses. Keep it terse and factual. -->
 
