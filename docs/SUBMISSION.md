@@ -9,23 +9,31 @@
 - **Repo is PUBLIC:** https://github.com/avinmaster/recipe-reel (MIT, README, Dockerfile, tests).
 - **Pitch deck (9 slides, print→PDF ready):** https://claude.ai/code/artifact/cc363a5d-4bc7-47e5-8958-5409b8c11945
 - **Cover image (1200×630, screenshot it):** https://claude.ai/code/artifact/25cdd81e-4737-4afe-9519-8002fec49ccd
-- **Fireworks $50 credits: DONE.** Coupon `FW-LABLAB-SEN8` (from your AMD email) was redeemed at
-  app.fireworks.ai/fire-pass → **Credits: $50.00** live on account `oybek-odilov-dev-rsf`.
-  Gemma (`gemma-4-31b-it`) is now usable serverless (multimodal).
-- **⏳ ONE manual step for you:** create the API key (the dashboard's create-key modal wouldn't
-  cooperate with automation). At https://app.fireworks.ai/settings/users/api-keys →
-  **Create API Key → API Key** → copy it → paste into `.env` as `FIREWORKS_API_KEY=...`.
-  Then a **real run works immediately** (this project box already has ffmpeg + yt-dlp):
-  ```bash
-  # laptop / no GPU — Gemma does vision + synthesis via Fireworks:
-  FIREWORKS_API_KEY=... VISION=fireworks SYNTHESIZER=fireworks TRANSCRIBER=mock \
-    uvicorn app.main:app
-  ./scripts/demo.sh "https://www.youtube.com/watch?v=<a short cooking video>"
-  ```
-  On the AMD MI300X pod, use `TRANSCRIBER=local VISION=local` for the full on-GPU story
-  (note: the AMD notebook cloud had an outage tonight — retry when it's back).
-- **Still needs you:** record the demo video (with voiceover — organizers confirmed it should
-  have one) and export the deck to PDF, then submit on lablab.
+- **Fireworks $50 credits: redeemed** (coupon `FW-LABLAB-SEN8`) → Credits $50.00 live; API key
+  created and in `.env` (verified reaching the API). **BUT** — to run inference the Fireworks
+  account still needs a **payment method added** to activate it (billing page:
+  *"Add a payment method to activate your account"*). The $50 credits then cover usage. **This
+  is your financial call — Claude can't add card details.** Also verified: **Gemma is not on
+  Fireworks serverless** (404s); Fire Pass grants **GLM 5.2 Fast / Kimi** only.
+- **Two ways to a real run (pick one):**
+  1. **AMD MI300X pod (recommended, wins the Gemma prize):** self-host Gemma with vLLM and run
+     perception on-GPU — no card, no Fireworks needed:
+     ```bash
+     ./scripts/serve_amd_gemma.sh                      # Gemma on the MI300X via vLLM
+     TRANSCRIBER=local VISION=local SYNTHESIZER=amd uvicorn app.main:app
+     ```
+     (The AMD notebook cloud had an OUTAGE overnight — retry when it's back.)
+  2. **Fireworks (after adding a payment method):** GLM 5.2 Fast for synthesis (text-only, so
+     vision must be local or skipped):
+     ```bash
+     SYNTHESIZER=fireworks SYNTH_MODEL=accounts/fireworks/routers/glm-5p2-fast \
+       VISION=none TRANSCRIBER=mock uvicorn app.main:app
+     ```
+  3. **Zero-setup fallback for the demo video:** `MOCK_MODE=true` runs the whole pipeline
+     offline and returns the full sample recipe — narrate that if live inference isn't ready.
+- **Still needs you:** record the demo video (voiceover required), export the deck to PDF, then
+  submit on lablab. Paste-ready copy is in `docs/submission-copy.md`; candidate videos in
+  `docs/test-videos.md`.
 
 ## lablab form fields
 - [ ] **Project Title** — RecipeReel
