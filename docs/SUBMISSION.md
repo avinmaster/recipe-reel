@@ -15,22 +15,29 @@
   *"Add a payment method to activate your account"*). The $50 credits then cover usage. **This
   is your financial call — Claude can't add card details.** Also verified: **Gemma is not on
   Fireworks serverless** (404s); Fire Pass grants **GLM 5.2 Fast / Kimi** only.
-- **Two ways to a real run (pick one):**
-  1. **AMD MI300X pod (recommended, wins the Gemma prize):** self-host Gemma with vLLM and run
-     perception on-GPU — no card, no Fireworks needed:
+  **Official confirmation (LabLab Admin bot, Jul 11):** *"You cannot use the hackathon Fireworks
+  credits without a payment method."* Another participant (BENI) hit the identical wall; no
+  card-free workaround exists. Also: **Fireworks is not required for Track 3** (rules say "AMD GPUs
+  **and/or** Fireworks"); Gemma is a bonus. So don't get stuck on Fireworks.
+- **Ways to a real run (pick one):**
+  1. **Real Gemma NOW — free, no card (Google AI Studio):** the fastest working path today.
+     Get a free key (no card) at https://aistudio.google.com/apikey, then:
      ```bash
-     ./scripts/serve_amd_gemma.sh                      # Gemma on the MI300X via vLLM
+     SYNTHESIZER=fireworks FIREWORKS_API_KEY=<google-key> \
+       FIREWORKS_BASE_URL=https://generativelanguage.googleapis.com/v1beta/openai/ \
+       SYNTH_MODEL=gemma-3-27b-it VISION=none TRANSCRIBER=mock uvicorn app.main:app
+     ```
+     Real Gemma output — but not *AMD-hosted* (great for the demo; not the AMD-Gemma prize).
+  2. **AMD MI300X pod (wins the AMD-Gemma prize):** self-host Gemma via vLLM, perception on-GPU:
+     ```bash
+     ./scripts/serve_amd_gemma.sh
      TRANSCRIBER=local VISION=local SYNTHESIZER=amd uvicorn app.main:app
      ```
-     (The AMD notebook cloud had an OUTAGE overnight — retry when it's back.)
-  2. **Fireworks (after adding a payment method):** GLM 5.2 Fast for synthesis (text-only, so
-     vision must be local or skipped):
-     ```bash
-     SYNTHESIZER=fireworks SYNTH_MODEL=accounts/fireworks/routers/glm-5p2-fast \
-       VISION=none TRANSCRIBER=mock uvicorn app.main:app
-     ```
-  3. **Zero-setup fallback for the demo video:** `MOCK_MODE=true` runs the whole pipeline
-     offline and returns the full sample recipe — narrate that if live inference isn't ready.
+     ⚠️ The AMD notebook cloud is in an ongoing 504/502 OUTAGE (organizers said "stop requesting
+     notebooks until resolved") — retry when it's back.
+  3. **Fireworks (only if you add a card):** `SYNTH_MODEL=accounts/fireworks/routers/glm-5p2-fast VISION=none`.
+  4. **Zero-setup fallback for the demo video:** `MOCK_MODE=true` runs the whole pipeline offline
+     and returns the full sample recipe — narrate that if live inference isn't ready.
 - **Still needs you:** record the demo video (voiceover required), export the deck to PDF, then
   submit on lablab. Paste-ready copy is in `docs/submission-copy.md`; candidate videos in
   `docs/test-videos.md`.
