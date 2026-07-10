@@ -213,6 +213,19 @@ kept shallow so it's a quick change.
   TODO for user: run perception on the MI300X pod; add FIREWORKS_API_KEY to .env; record
   demo video + slides; **flip repo to public before submitting**.
 
+- **2026-07-11 (ops)** — Fireworks credit path (from LabLab Admin Discord FAQ): the $50 is
+  claimed via **Fire Pass** → https://app.fireworks.ai/fire-pass → enter an **invite code** →
+  Unlock → create a NEW `fpk-…` key (Settings→API Keys) → use `BASE_URL=https://api.fireworks.ai/inference/v1`.
+  The invite code is NOT posted in Discord (per-participant; check registered email +
+  lablab Event Dashboard; many participants reported delays). **Gotcha:** Fire Pass currently
+  unlocks only **GLM 5.2 Fast** + **Kimi K2.7 Code Fast** — **NOT Gemma**, and those are
+  text-only. Implications: (a) if only Fire Pass, set `SYNTH_MODEL` to the GLM/Kimi Fire Pass
+  path (our synth is model-agnostic) — works but forfeits the Gemma prize; (b) Gemma needs real
+  serverless credits (account "Credits" balance) OR — the robust play — **host Gemma on the
+  MI300X via vLLM (`SYNTHESIZER=amd`)**, which also directly targets the $2k "Best AMD-Hosted
+  Gemma" prize and sidesteps the credit/invite-code mess. Repo is now **public**
+  (github.com/avinmaster/recipe-reel). User's Fireworks acct email matches hackathon signup.
+
 <!-- Append new entries here as work progresses. Keep it terse and factual. -->
 
 ---
