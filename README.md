@@ -85,8 +85,15 @@ Interactive docs at `/docs` once running.
 
 A real run returns a fully structured recipe — quantities sourced from on-screen text, steps
 deep-linked to the video, plus a schema.org export. See
-[`docs/examples/recipe.json`](./docs/examples/recipe.json) and
-[`docs/examples/recipe.schema-org.json`](./docs/examples/recipe.schema-org.json).
+[`docs/examples/recipe.json`](./docs/examples/recipe.json),
+[`docs/examples/recipe.schema-org.json`](./docs/examples/recipe.schema-org.json), and a recipe
+extracted from a **real YouTube video** in
+[`docs/examples/recipe-from-youtube.json`](./docs/examples/recipe-from-youtube.json).
+
+> **Verified end-to-end** (Jul 2026): a real YouTube cooking short → Gemini-2.5-flash reads the
+> frames → **Gemma-4 writes the recipe**. Server-side YouTube download needs only **Node** on the
+> PATH (yt-dlp solves the JS/PO-token challenge) — no browser, no cookies, no personal account.
+> System deps: `ffmpeg` + `node` (both preinstalled in the Docker images).
 
 ```jsonc
 {

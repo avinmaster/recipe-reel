@@ -39,6 +39,12 @@ def ingest_url(url: str, workdir: Path) -> IngestResult:
 
     workdir.mkdir(parents=True, exist_ok=True)
     common: dict = {"quiet": True, "no_warnings": True, "noplaylist": True}
+    # Let yt-dlp solve YouTube's JS / PO-token challenge with a local JS runtime (Node/Deno).
+    # This is what makes server-side YouTube downloads work WITHOUT browser cookies or a
+    # personal account. Requires `node` (or `deno`) on PATH; harmless if absent.
+    common["js_runtimes"] = {"node": {"path": None}, "deno": {"path": None}}
+    # Cookies are only needed for login-walled/age-gated content — off by default (a backend
+    # shouldn't depend on a personal browser session). Enable via YTDLP_COOKIES_FROM_BROWSER.
     if settings.ytdlp_cookies_from_browser:
         common["cookiesfrombrowser"] = (settings.ytdlp_cookies_from_browser,)
 

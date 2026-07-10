@@ -1,0 +1,303 @@
+{
+  "title": "Rice and Meat Bowl with Black Beans",
+  "description": "A hearty one-pot meal featuring ground meat, black beans, and white rice, topped with melted cheese.",
+  "cuisine": "Mexican-inspired",
+  "category": "main course",
+  "tags": [
+    "one-pot",
+    "hearty",
+    "rice bowl"
+  ],
+  "servings": null,
+  "servings_count": null,
+  "difficulty": "easy",
+  "prep_time_minutes": null,
+  "cook_time_minutes": null,
+  "total_time_minutes": null,
+  "ingredients": [
+    {
+      "name": "olive oil",
+      "quantity": null,
+      "unit": null,
+      "notes": null,
+      "group": null,
+      "optional": false,
+      "raw_text": "Olive oil",
+      "source": "caption"
+    },
+    {
+      "name": "onion",
+      "quantity": null,
+      "unit": null,
+      "notes": "saut\u00e9ed",
+      "group": null,
+      "optional": false,
+      "raw_text": "saut\u00e9ed onions",
+      "source": "caption"
+    },
+    {
+      "name": "green pepper",
+      "quantity": null,
+      "unit": null,
+      "notes": null,
+      "group": null,
+      "optional": false,
+      "raw_text": "green peppers",
+      "source": "caption"
+    },
+    {
+      "name": "ground meat",
+      "quantity": null,
+      "unit": null,
+      "notes": null,
+      "group": null,
+      "optional": false,
+      "raw_text": "Ground meat",
+      "source": "caption"
+    },
+    {
+      "name": "reddish sauce",
+      "quantity": null,
+      "unit": null,
+      "notes": null,
+      "group": null,
+      "optional": false,
+      "raw_text": "reddish sauce",
+      "source": "caption"
+    },
+    {
+      "name": "black beans",
+      "quantity": null,
+      "unit": null,
+      "notes": null,
+      "group": null,
+      "optional": false,
+      "raw_text": "Black beans",
+      "source": "caption"
+    },
+    {
+      "name": "paprika",
+      "quantity": null,
+      "unit": null,
+      "notes": "red paprika-like spice",
+      "group": null,
+      "optional": false,
+      "raw_text": "red paprika-like",
+      "source": "caption"
+    },
+    {
+      "name": "green herbs",
+      "quantity": null,
+      "unit": null,
+      "notes": null,
+      "group": null,
+      "optional": false,
+      "raw_text": "green herbs",
+      "source": "caption"
+    },
+    {
+      "name": "white powder spice",
+      "quantity": null,
+      "unit": null,
+      "notes": "unspecified white powder",
+      "group": null,
+      "optional": false,
+      "raw_text": "white powder",
+      "source": "caption"
+    },
+    {
+      "name": "tomato sauce",
+      "quantity": null,
+      "unit": null,
+      "notes": "possibly tomato sauce or salsa",
+      "group": null,
+      "optional": false,
+      "raw_text": "red liquid, possibly tomato sauce or salsa",
+      "source": "caption"
+    },
+    {
+      "name": "white rice",
+      "quantity": null,
+      "unit": null,
+      "notes": "cooked",
+      "group": null,
+      "optional": false,
+      "raw_text": "Cooked white rice",
+      "source": "caption"
+    },
+    {
+      "name": "cheese",
+      "quantity": null,
+      "unit": null,
+      "notes": "melted",
+      "group": null,
+      "optional": false,
+      "raw_text": "melted cheese",
+      "source": "caption"
+    }
+  ],
+  "equipment": [
+    {
+      "name": "white pot",
+      "notes": "used on stovetop"
+    },
+    {
+      "name": "spoon",
+      "notes": "for stirring"
+    },
+    {
+      "name": "colander",
+      "notes": "for adding rice"
+    },
+    {
+      "name": "pot lid",
+      "notes": null
+    },
+    {
+      "name": "wooden spoon",
+      "notes": "for serving"
+    },
+    {
+      "name": "white bowl",
+      "notes": "for serving"
+    }
+  ],
+  "steps": [
+    {
+      "number": 1,
+      "instruction": "Pour olive oil into a white pot on the stovetop.",
+      "start_time_seconds": 2.0,
+      "duration_minutes": null,
+      "temperature": null,
+      "ingredients_used": [
+        "olive oil"
+      ],
+      "tip": null
+    },
+    {
+      "number": 2,
+      "instruction": "Add ground meat to the pot containing saut\u00e9ed onions and green peppers.",
+      "start_time_seconds": 5.0,
+      "duration_minutes": null,
+      "temperature": null,
+      "ingredients_used": [
+        "ground meat",
+        "onion",
+        "green pepper"
+      ],
+      "tip": null
+    },
+    {
+      "number": 3,
+      "instruction": "Stir the ground meat, onions, and green peppers, mixing in a reddish sauce.",
+      "start_time_seconds": 8.0,
+      "duration_minutes": null,
+      "temperature": null,
+      "ingredients_used": [
+        "ground meat",
+        "onion",
+        "green pepper",
+        "reddish sauce"
+      ],
+      "tip": null
+    },
+    {
+      "number": 4,
+      "instruction": "Add black beans and various spices (paprika, green herbs, and white powder) to the meat mixture.",
+      "start_time_seconds": 11.0,
+      "duration_minutes": null,
+      "temperature": null,
+      "ingredients_used": [
+        "black beans",
+        "paprika",
+        "green herbs",
+        "white powder spice"
+      ],
+      "tip": null
+    },
+    {
+      "number": 5,
+      "instruction": "Pour in a red liquid, such as tomato sauce or salsa.",
+      "start_time_seconds": 14.0,
+      "duration_minutes": null,
+      "temperature": null,
+      "ingredients_used": [
+        "tomato sauce"
+      ],
+      "tip": null
+    },
+    {
+      "number": 6,
+      "instruction": "Add cooked white rice from a colander into the pot.",
+      "start_time_seconds": 17.0,
+      "duration_minutes": null,
+      "temperature": null,
+      "ingredients_used": [
+        "white rice"
+      ],
+      "tip": null
+    },
+    {
+      "number": 7,
+      "instruction": "Cover the pot with a lid and cook.",
+      "start_time_seconds": 20.0,
+      "duration_minutes": null,
+      "temperature": null,
+      "ingredients_used": [],
+      "tip": null
+    },
+    {
+      "number": 8,
+      "instruction": "Scoop the finished rice and meat dish into a bowl and top with melted cheese.",
+      "start_time_seconds": 23.0,
+      "duration_minutes": null,
+      "temperature": null,
+      "ingredients_used": [
+        "cheese"
+      ],
+      "tip": null
+    }
+  ],
+  "tips": [],
+  "nutrition": {
+    "calories": null,
+    "protein_g": null,
+    "carbs_g": null,
+    "fat_g": null,
+    "fiber_g": null,
+    "sugar_g": null,
+    "sodium_mg": null,
+    "is_estimate": true,
+    "basis": "per-serving from ingredients"
+  },
+  "language": "en",
+  "confidence": 0.8,
+  "warnings": [
+    "quantities not stated in video",
+    "no audio transcript available",
+    "some ingredients inferred from visual appearance (e.g., spices, red liquid)"
+  ],
+  "id": "example-from-youtube",
+  "source": {
+    "type": "upload",
+    "url": "https://www.youtube.com/shorts/hKdWeq4LXFw",
+    "platform": "youtube",
+    "title": "Throw a bunch of ingredients into a pot for this dinner",
+    "channel": null,
+    "duration_seconds": 29.397333,
+    "thumbnail_url": null
+  },
+  "model_used": "gemma-4-31b-it",
+  "generated_at": "2026-07-11T00:00:00Z",
+  "processing": {
+    "transcriber": "none",
+    "vision": "fireworks:gemini-2.5-flash",
+    "synthesizer": "fireworks-gemma:gemma-4-31b-it",
+    "device": "cpu",
+    "gpu_name": null,
+    "rocm_version": null,
+    "frames_analyzed": 9,
+    "transcript_chars": 0,
+    "elapsed_seconds": null
+  }
+}

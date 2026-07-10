@@ -12,7 +12,7 @@ ENV PYTHONUNBUFFERED=1 \
 
 # ffmpeg for audio/frame extraction; the rest is pure-Python.
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends ffmpeg \
+    && apt-get install -y --no-install-recommends ffmpeg nodejs \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
