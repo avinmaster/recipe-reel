@@ -12,3 +12,12 @@ class Transcriber(Protocol):
     def transcribe(self, audio_path: str | None) -> Transcript:
         """Transcribe an audio file into text + timestamped segments."""
         ...
+
+
+class NoopTranscriber:
+    """Returns an empty transcript — for vision-only real runs (no GPU/torch needed)."""
+
+    name = "none"
+
+    def transcribe(self, audio_path: str | None) -> Transcript:
+        return Transcript(text="", segments=[], language=None, source="none")

@@ -20,14 +20,20 @@
   card-free workaround exists. Also: **Fireworks is not required for Track 3** (rules say "AMD GPUs
   **and/or** Fireworks"); Gemma is a bonus. So don't get stuck on Fireworks.
 - **Ways to a real run (pick one):**
-  1. **Real Gemma NOW — free, no card (Google AI Studio):** the fastest working path today.
-     Get a free key (no card) at https://aistudio.google.com/apikey, then:
+  1. **Real per-video recipe NOW — free, no card, no GPU (Google AI Studio) — ✅ VERIFIED.**
+     Gemini reads the frames, **Gemma-4 writes the recipe**. Free key (no card) at
+     https://aistudio.google.com/apikey (the key is already in this repo's `.env`), then:
      ```bash
-     SYNTHESIZER=fireworks FIREWORKS_API_KEY=<google-key> \
+     SYNTHESIZER=fireworks SYNTH_MODEL=gemma-4-31b-it \
        FIREWORKS_BASE_URL=https://generativelanguage.googleapis.com/v1beta/openai/ \
-       SYNTH_MODEL=gemma-4-31b-it VISION=none TRANSCRIBER=mock uvicorn app.main:app
+       VISION=fireworks VISION_FIREWORKS_MODEL=gemini-2.5-flash \
+       TRANSCRIBER=none uvicorn app.main:app
+     # then POST a real cooking URL — on your machine YouTube isn't blocked.
      ```
-     Real Gemma output — but not *AMD-hosted* (great for the demo; not the AMD-Gemma prize).
+     Verified end-to-end here: real Gemma-4 produced 11 ingredients w/ on-screen provenance +
+     timestamped steps (see `docs/examples/recipe.json`). Real Gemma, but not *AMD-hosted*
+     (great for the demo; the AMD-Gemma bonus needs the pod). Add `TRANSCRIBER=local` (needs
+     torch) for real spoken-step transcription too.
   2. **AMD MI300X pod (wins the AMD-Gemma prize):** self-host Gemma via vLLM, perception on-GPU:
      ```bash
      ./scripts/serve_amd_gemma.sh

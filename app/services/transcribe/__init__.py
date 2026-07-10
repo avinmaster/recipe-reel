@@ -4,7 +4,7 @@ from __future__ import annotations
 import logging
 
 from app.config import TranscriberKind, settings
-from app.services.transcribe.base import Transcriber
+from app.services.transcribe.base import NoopTranscriber, Transcriber
 from app.services.transcribe.mock import MockTranscriber
 
 log = logging.getLogger("recipereel.transcribe")
@@ -14,6 +14,8 @@ def build_transcriber() -> Transcriber:
     kind = settings.effective_transcriber()
     if kind == TranscriberKind.mock:
         return MockTranscriber()
+    if kind == TranscriberKind.none:
+        return NoopTranscriber()
     # local (HF transformers Whisper on ROCm/CPU) — imported lazily so the app boots
     # without torch/transformers installed.
     try:

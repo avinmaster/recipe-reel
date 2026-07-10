@@ -16,6 +16,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class TranscriberKind(str, Enum):
     local = "local"      # HF transformers Whisper (AMD MI300X / ROCm, or CPU)
+    none = "none"        # empty transcript (vision-only real runs, no GPU/torch needed)
     mock = "mock"
 
 
