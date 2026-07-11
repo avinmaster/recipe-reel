@@ -153,9 +153,12 @@
   @media print{
     .hud,.dots{display:none}
     .deck{height:auto;overflow:visible}
-    .slide{min-height:auto;page-break-after:always;border:0;padding:8vh 6vw}
+    .slide{min-height:100vh;height:100vh;page-break-after:always;break-after:page;
+      border:0;padding:6vh 6vw;justify-content:center}
+    .slide:last-child{page-break-after:auto;break-after:auto}
     body{background:#fff;color:#000}
   }
+  @page{size:1280px 720px;margin:0}
 </style>
 
 <main class="deck" id="deck">
