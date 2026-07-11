@@ -3,10 +3,12 @@ from __future__ import annotations
 
 import logging
 from contextlib import asynccontextmanager
+from pathlib import Path
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse
+from fastapi.staticfiles import StaticFiles
 
 from app import __version__
 from app.api import routes_health, routes_jobs, routes_recipes
@@ -60,6 +62,15 @@ app.include_router(routes_recipes.router)
 app.include_router(routes_jobs.router)
 
 
+# Serve the web UI (JustCook front-end) when present. It's a static, no-build
+# SPA under ./web; mounting it lets one process serve the API + UI, and the UI's
+# "paste a link" flow can then call this same backend for live extraction.
+_WEB_DIR = Path(__file__).resolve().parent.parent / "web"
+_HAS_WEB = (_WEB_DIR / "index.html").is_file()
+if _HAS_WEB:
+    app.mount("/app", StaticFiles(directory=str(_WEB_DIR), html=True), name="web")
+
+
 @app.get("/", include_in_schema=False)
 def root() -> RedirectResponse:
-    return RedirectResponse(url="/docs")
+    return RedirectResponse(url="/app/" if _HAS_WEB else "/docs")

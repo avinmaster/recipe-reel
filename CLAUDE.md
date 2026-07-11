@@ -269,6 +269,23 @@ kept shallow so it's a quick change.
     Docker, deck+cover Artifacts, tests green. Remaining = user-only: run notebook on pod, record demo,
     export deck→PDF, submit. **Do NOT submit the lablab form or change the team.**
 
+- **2026-07-11 (front-end built)** — Built the **JustCook web UI** in `web/` (self-contained, no-build
+  vanilla HTML/CSS/JS) from the designs in `design/`. Key ask satisfied: **one adaptive app** — desktop
+  viewports get the editorial web layout; phone viewports (≤820px) get the full-bleed **iOS-app** layout
+  (mobile design used as the actual mobile web, not squished-responsive). Screens: Home/Discover, Recipe
+  (video embed + ingredient check-off + timecoded method + cook mode + equipment), Library/Browse (live
+  search + difficulty filters + hover video-preview), Add-via-link, Saved. **Realism:** verified Unsplash
+  food photos + real YouTube thumbnails, accurate brand SVG logos (YT/Vimeo/IG/FB/TikTok), ingredient
+  **emojis kept** (per maintainer). **All 8 supplied videos wired in** (Joshua Weissman pizza = featured
+  hero; real burger/pasta/lava-cake/Thai-curry on their cards). Paste-a-link parses YT/Vimeo/IG/FB/TikTok
+  and embeds inline; step timecodes seek the player. **Backend wiring (additive):** `app/main.py` now mounts
+  the SPA at `/app` and root redirects there; the Add flow does **live extraction** against the real API
+  (POST /recipes → SSE progress w/ AMD stage labels) when a backend is up, else falls back to a client-side
+  embed. Verified in-browser: all screens (desktop + mobile), search/filter, ingredient/step toggles, video
+  embed + timecode seek, and a full live-extract run in MOCK_MODE. Backend tests still green (11 passed).
+  `?force=mobile|desktop` added as a preview/testing toggle. Frontend was previously "built separately" —
+  this session the maintainer explicitly asked for it.
+
 <!-- Append new entries here as work progresses. Keep it terse and factual. -->
 
 ---

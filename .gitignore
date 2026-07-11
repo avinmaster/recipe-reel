@@ -48,3 +48,6 @@ models_cache/
 .idea/
 .vscode/
 *.log
+
+# Design-tool working files (source mockups / pasted uploads — not shipped)
+design/
