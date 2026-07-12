@@ -327,6 +327,27 @@ kept shallow so it's a quick change.
   tags present with absolute HTTPS URLs, `og-cover.png` returns `200 image/png`, zero "JustCook"
   left on the page. Local commit only (no push / no form — maintainer's call).
 
+- **2026-07-12 (YouTube ingest on the VPS: residential proxy, NOT cookies)** — The live box is a
+  datacenter IP → YouTube bot-walls it ("Sign in to confirm you're not a bot"); every URL extract
+  failed at the ingest step. Maintainer directed the **proxy** route (reusing the proxy-ipv4.com
+  account already wired into the sibling `kriptokonkurs-scraper`). Findings from live testing on the
+  box (yt-dlp 2026.07.04):
+  - **Datacenter IPv4 proxies do NOT beat YouTube** — tested one across 7 `player_client` modes, all
+    still bot-walled. **ISP/residential proxies DO** (control video extracted cleanly through an ISP
+    proxy). So proxy *type* is the whole game; plain datacenter is useless for YouTube.
+  - Bought 1 **ISP proxy** (proxy-ipv4 `/order`, GBR, 7d, $1.30) → wired as **`YTDLP_PROXY`** (new
+    `settings.ytdlp_proxy` → `ingest.py` sets yt-dlp `proxy`). Value lives in **`.env` only, never in
+    code** (maintainer's rule). Verified: the app reads it and extracts real YouTube metadata through
+    the proxy end-to-end on the VPS. Commit `73f9fb2` (config + ingest + `.env.example`).
+  - **Caveat 1 — login/age-gated videos still need cookies.** The maintainer's test video
+    `kfW94tNMFkA` returns playability `LOGIN_REQUIRED`; no proxy bypasses an account gate. Use
+    non-gated public videos, or add `YTDLP_COOKIES_FILE` (a burner account's cookies.txt) for gated
+    ones. **Caveat 2 — a single residential IP gets rate-limited (HTTP 429) under heavy/concurrent
+    load** (I tripped it while diagnosing); fine for occasional demo extractions, cools down on its own.
+  - The 3 datacenter IPv4 proxies bought earlier (SGP, ~valid to 2026-08-11) are **non-refundable**
+    (proxy-ipv4 has no cancel/refund endpoint) but are exactly what `kriptokonkurs-scraper` uses for
+    non-YouTube scraping — repurpose there, not wasted. See memory `vps-deploy`.
+
 <!-- Append new entries here as work progresses. Keep it terse and factual. -->
 
 ---
