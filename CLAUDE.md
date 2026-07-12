@@ -286,6 +286,31 @@ kept shallow so it's a quick change.
   `?force=mobile|desktop` added as a preview/testing toggle. Frontend was previously "built separately" —
   this session the maintainer explicitly asked for it.
 
+- **2026-07-12 (frontend actually works + CAPTCHA + deploy tooling)** — Fixed the reported
+  "paste a link → just shows Pizza" bug. Root cause: the web UI (`web/assets/app.js`) was a static
+  mockup — every extraction navigated to the hardcoded featured Pizza recipe and **discarded the
+  recipe the backend returned**. Fixes: (1) added `mapApiRecipe()` that converts the backend
+  `Recipe` JSON → the UI's shape (ingredient groups w/ provenance chips, timecoded steps w/
+  gradient-placeholder photos + tips, equipment, real prep/cook/total, AMD transparency strip,
+  tips/warnings) and made the recipe view render THAT (not the fixture); (2) a real **extraction
+  progress screen** (`#/extract`, live SSE stages + honest error card + retry + "see sample");
+  (3) dynamic recipe title/eyebrow/times (no more hardcoded "Pizza"). Verified in-browser against
+  the live backend end-to-end (mock mode): paste link → "One-Pan Garlic Butter Shrimp Pasta" with
+  12 real ingredients + 7 timecoded steps renders. Note: the featured Joshua-Weissman pizza video
+  shows "Video unavailable" because that creator disabled YouTube embedding — any embeddable link
+  plays inline (confirmed with a test video).
+  - **CAPTCHA** (self-hosted, open-source **Altcha** proof-of-work — no third-party/account/external
+    call): `app/services/captcha.py` (stdlib HMAC+SHA-256 challenge/verify + one-time-use replay
+    guard), `app/api/routes_captcha.py` (`GET /api/v1/captcha` + `require_captcha` dep), gates
+    `POST /recipes(+/upload)`. Config: `CAPTCHA_ENABLED`, `CAPTCHA_HMAC_SECRET`, `CAPTCHA_COMPLEXITY`,
+    `CAPTCHA_TTL_SECONDS`. Frontend: Altcha widget in the loader card + browser PoW solver
+    (`crypto.subtle`), sends `X-Altcha-Solution` header, re-solves+retries on 403. `/api/v1/meta`
+    exposes `captcha_enabled` so the UI shows the widget only when on. Verified: 403 without token,
+    widget-solve → gated extraction succeeds, replay rejected.
+  - **Deploy tooling** at workspace-root `lablab-hackathon/deploy/` (reusable for recipe-reel +
+    keystone): `deploy-app.sh` (systemd + venv + captcha), `setup-tunnel.sh` (one Cloudflare named
+    tunnel → both apps), `README.md` runbook. Target VPS `root@213.136.89.75`. See memory `vps-deploy`.
+
 <!-- Append new entries here as work progresses. Keep it terse and factual. -->
 
 ---

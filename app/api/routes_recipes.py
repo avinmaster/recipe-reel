@@ -3,9 +3,10 @@ from __future__ import annotations
 import uuid
 from pathlib import Path
 
-from fastapi import APIRouter, File, HTTPException, UploadFile, status
+from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
 from fastapi.responses import JSONResponse
 
+from app.api.routes_captcha import require_captcha
 from app.config import settings
 from app.models.enums import SourceType
 from app.models.job import Job, JobCreate
@@ -18,13 +19,15 @@ _ALLOWED_EXT = {".mp4", ".mov", ".mkv", ".webm", ".avi", ".m4v", ".mp3", ".wav",
 
 
 @router.post("/recipes", response_model=Job, status_code=status.HTTP_202_ACCEPTED)
-async def create_from_url(body: JobCreate) -> Job:
+async def create_from_url(body: JobCreate, _: None = Depends(require_captcha)) -> Job:
     """Submit a video URL (YouTube/TikTok/Instagram/…). Returns a job to poll."""
     return get_manager().submit(SourceType.url, body.url.strip())  # type: ignore[union-attr]
 
 
 @router.post("/recipes/upload", response_model=Job, status_code=status.HTTP_202_ACCEPTED)
-async def create_from_upload(file: UploadFile = File(...)) -> Job:
+async def create_from_upload(
+    file: UploadFile = File(...), _: None = Depends(require_captcha)
+) -> Job:
     """Submit an uploaded cooking video file. Returns a job to poll."""
     ext = Path(file.filename or "").suffix.lower()
     if ext and ext not in _ALLOWED_EXT:

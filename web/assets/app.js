@@ -21,9 +21,158 @@
     if (f === "desktop") return false;
     return mq.matches;
   };
-  const byId = (id) => RECIPES.find((r) => r.id === id) || null;
+  /* Live-extracted recipes (mapped from the backend) live here, keyed by id, and
+     take precedence over the seed library so a real extraction actually renders. */
+  const EXTRACTED = {};
+  const byId = (id) => EXTRACTED[id] || RECIPES.find((r) => r.id === id) || null;
   const posterErr = (r) =>
     r.posterFallback ? ` onerror="this.onerror=null;this.src='${r.posterFallback}'"` : "";
+
+  /* ---------- backend Recipe → front-end recipe shape ---------- */
+  const GROUP_STYLES = [
+    { color: "#f24e1e", bg: "#fff1ec" }, { color: "#09a866", bg: "#e9f9f1" },
+    { color: "#a259ff", bg: "#f4edff" }, { color: "#0d99ff", bg: "#eaf4ff" },
+    { color: "#e08422", bg: "#fff6ec" }, { color: "#e0341a", bg: "#ffecea" },
+  ];
+  const STEP_COLORS = ["#f24e1e", "#e08422", "#09a866", "#0d99ff", "#a259ff"];
+  const PROV = {
+    on_screen: { label: "on-screen", color: "#0d78d4", bg: "#eaf4ff" },
+    spoken: { label: "spoken", color: "#09a866", bg: "#e9f9f1" },
+    inferred: { label: "inferred", color: "#e08422", bg: "#fff6ec" },
+  };
+  const FALLBACK_POSTER =
+    "https://images.unsplash.com/photo-1504754524776-8f4f37790ca0?w=1000&q=75&auto=format&fit=crop";
+  const EMOJI_MAP = [
+    [/pizza|dough|flour|bread|crust/, "🌾"], [/yeast/, "🫧"], [/water/, "💧"],
+    [/salt/, "🧂"], [/pepper|chilli|chili|paprika|cayenne/, "🌶️"], [/olive oil|oil/, "🫒"],
+    [/sugar|honey|syrup|caramel/, "🍬"], [/tomato|marinara|passata|ketchup/, "🍅"], [/garlic/, "🧄"],
+    [/onion|shallot|scallion|leek/, "🧅"], [/oregano|basil|parsley|cilantro|coriander|herb|thyme|rosemary|mint|dill/, "🌿"],
+    [/cheese|mozzarella|parmesan|cheddar|feta|ricotta/, "🧀"], [/pepperoni|salami|sausage|bacon|ham|chorizo/, "🍖"],
+    [/shrimp|prawn/, "🦐"], [/fish|salmon|tuna|cod|anchov/, "🐟"], [/chicken|poultry|turkey/, "🍗"],
+    [/beef|steak|mince|ground meat|brisket/, "🥩"], [/pork|lamb/, "🥓"], [/egg/, "🥚"], [/butter|ghee|margarine/, "🧈"],
+    [/milk|cream|yog|yoghurt|yogurt|buttermilk/, "🥛"], [/pasta|linguine|spaghetti|noodle|penne|semolina|macaroni/, "🍝"],
+    [/\brice\b|risotto/, "🍚"], [/lemon|lime|citrus/, "🍋"], [/wine|vinegar|stock|broth|soy|sauce/, "🍶"],
+    [/mushroom/, "🍄"], [/potato/, "🥔"], [/carrot/, "🥕"], [/corn|maize/, "🌽"], [/bean|lentil|chickpea|pea\b/, "🫘"],
+    [/chocolate|cocoa|cacao/, "🍫"], [/vanilla/, "🍦"], [/nut|almond|walnut|peanut|cashew|pecan/, "🥜"],
+    [/apple/, "🍎"], [/banana/, "🍌"], [/berry|strawberr|raspberr|blueberr|blackberr/, "🍓"],
+    [/avocado/, "🥑"], [/spinach|lettuce|greens|kale|cabbage/, "🥬"], [/curry|cumin|turmeric|masala|spice/, "🌶️"],
+    [/flour|starch|baking/, "🌾"], [/broccoli/, "🥦"], [/cucumber|pickle/, "🥒"],
+  ];
+  function guessEmoji(name) {
+    const n = (name || "").toLowerCase();
+    for (const [re, e] of EMOJI_MAP) if (re.test(n)) return e;
+    return "🍽️";
+  }
+  const cap = (s) => (s ? String(s).charAt(0).toUpperCase() + String(s).slice(1) : s);
+  function fmtNum(n) {
+    if (n == null) return null;
+    const r = Math.round(n * 100) / 100;
+    return String(r);
+  }
+  function fmtQty(q, unit) {
+    const n = fmtNum(q);
+    if (n == null) return null;
+    return unit ? n + " " + unit : n;
+  }
+  const amtText = (ing) => fmtQty(ing.quantity, ing.unit) || ing.notes || "";
+  function ingName(ing) {
+    const hasQty = fmtQty(ing.quantity, ing.unit) != null;
+    let nm = ing.name || "";
+    if (hasQty && ing.notes) nm += ", " + ing.notes;
+    if (ing.optional) nm += " (optional)";
+    return nm;
+  }
+  function secToTc(s) {
+    if (s == null) return "0:00";
+    s = Math.max(0, Math.round(s));
+    return Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0");
+  }
+  function minLabel(m) {
+    if (m == null) return "";
+    m = Math.round(m);
+    if (m < 60) return m + " min";
+    const hr = Math.floor(m / 60), mm = m % 60;
+    return mm ? hr + " hr " + mm + " min" : hr + " hr";
+  }
+  function shortTitle(instruction, i) {
+    const first = String(instruction || "").split(/[.,;:]/)[0].trim();
+    const t = first.split(/\s+/).slice(0, 6).join(" ");
+    return t ? cap(t) : "Step " + (i + 1);
+  }
+  function ytIdFromInfo(info) {
+    if (!info || info.type !== "youtube") return null;
+    const m = String(info.base || "").match(/embed\/([^/?]+)/);
+    return m ? m[1] : null;
+  }
+  function mapApiRecipe(api, info) {
+    const groupsMap = new Map();
+    (api.ingredients || []).forEach((ing) => {
+      const key = ing.group || "Ingredients";
+      if (!groupsMap.has(key)) groupsMap.set(key, []);
+      groupsMap.get(key).push(ing);
+    });
+    let gi = 0;
+    const ingredientGroups = Array.from(groupsMap.entries()).map(([title, items]) => {
+      const st = GROUP_STYLES[gi++ % GROUP_STYLES.length];
+      return {
+        title, color: st.color, bg: st.bg,
+        items: items.map((it) => ({
+          amt: amtText(it), name: ingName(it), emoji: guessEmoji(it.name), src: it.source,
+        })),
+      };
+    });
+    const steps = (api.steps || []).map((s, i) => ({
+      t: shortTitle(s.instruction, i),
+      time: minLabel(s.duration_minutes) || (s.temperature || ""),
+      c: STEP_COLORS[i % STEP_COLORS.length],
+      tc: secToTc(s.start_time_seconds),
+      start: Math.round(s.start_time_seconds || 0),
+      photo: null,
+      d: (s.instruction || "") + (s.tip ? "  💡 " + s.tip : ""),
+    }));
+    const total = api.total_time_minutes != null ? api.total_time_minutes
+      : ((api.prep_time_minutes || 0) + (api.cook_time_minutes || 0)) || null;
+    const src = api.source || {};
+    const ytId = ytIdFromInfo(info);
+    const poster = src.thumbnail_url
+      || (ytId ? "https://i.ytimg.com/vi/" + ytId + "/maxresdefault.jpg" : FALLBACK_POSTER);
+    const platform = (info && info.platform)
+      || (src.platform && src.platform !== "mock" ? cap(src.platform) : null);
+    let serves = "—";
+    if (api.servings_count != null) serves = String(api.servings_count);
+    else if (api.servings) serves = String(api.servings).replace(/servings?/i, "").trim() || String(api.servings);
+    return {
+      id: api.id,
+      name: api.title || "Untitled recipe",
+      titleAccent: (api.title || "").trim().split(/\s+/).slice(-1)[0] || "",
+      cuisine: api.cuisine || api.category || "",
+      difficulty: cap(api.difficulty) || "Easy",
+      time: total != null ? minLabel(total) : "",
+      serves,
+      rating: null,
+      confidence: api.confidence != null ? Math.round(api.confidence * 100) : null,
+      duration: src.duration_seconds ? secToTc(src.duration_seconds) : "",
+      channel: src.channel || "RecipeReel",
+      episode: platform ? "From " + platform : "AI-extracted",
+      cooks: null,
+      description: api.description
+        || "Extracted from the video you pasted — ingredients, quantities and timecoded steps below.",
+      prep: api.prep_time_minutes != null ? String(Math.round(api.prep_time_minutes)) : null,
+      cook: api.cook_time_minutes != null ? String(Math.round(api.cook_time_minutes)) : null,
+      total: total != null ? String(Math.round(total)) : null,
+      poster,
+      posterFallback: ytId ? "https://i.ytimg.com/vi/" + ytId + "/hqdefault.jpg" : null,
+      video: ytId,
+      ingredientGroups,
+      equipment: (api.equipment || []).map((e) => "🍴 " + e.name),
+      steps,
+      tips: api.tips || [],
+      warnings: api.warnings || [],
+      processing: api.processing || {},
+      sourceUrl: src.url || null,
+      extracted: true,
+    };
+  }
 
   /* API base — same origin if served by FastAPI, else localhost:8000 */
   const API_BASE = (() => {
@@ -99,7 +248,8 @@
     tab: "discover",        // mobile bottom tab
     seg: "ingredients",     // mobile recipe segment
     cook: false, activeStep: 0,
-    pendingVideo: null,     // from Add flow
+    extractJob: null,       // live extraction in progress {raw,info,pct,stageKey,phase,error,jobId}
+    captcha: { enabled: false, token: null, at: 0, solving: false },
   };
   const checkedSet = (id) => (state.checked[id] = state.checked[id] || new Set());
   const doneSet = (id) => (state.done[id] = state.done[id] || new Set());
@@ -115,6 +265,7 @@
     if (parts[0] === "library") return { view: "library" };
     if (parts[0] === "saved") return { view: "saved" };
     if (parts[0] === "add") return { view: "add" };
+    if (parts[0] === "extract") return { view: "extract" };
     return { view: "home" };
   }
   function navigate(hash) { if (location.hash === hash) render(); else location.hash = hash; }
@@ -127,9 +278,11 @@
     navigate("#/recipe/" + r.id);
   }
 
-  /* recipe content: the featured pizza is fully authored; other recipes
-     reuse the same structured shell (demo) but keep their own identity. */
+  /* recipe content: a live-extracted recipe (or the featured pizza) carries its own
+     fully-authored body — render it verbatim. A compact library card has no body, so
+     it borrows the featured structured shell (demo) while keeping its own identity. */
   function recipeContent(r) {
+    if (r && r.ingredientGroups && r.steps) return r;
     return Object.assign({}, FEATURED, {
       id: r.id, name: r.name, cuisine: r.cuisine, difficulty: r.difficulty,
       time: r.time, serves: r.serves, rating: r.rating, duration: r.duration,
@@ -137,6 +290,20 @@
       channel: r.channel || FEATURED.channel,
     });
   }
+
+  /* Title with the accent word highlighted (works for extracted + featured). */
+  function titleHTML(r) {
+    const name = r.name || "Recipe";
+    const acc = r.titleAccent;
+    if (acc && name.includes(acc)) {
+      return h(name).replace(h(acc), `<span class="accent">${h(acc)}</span>`);
+    }
+    return h(name);
+  }
+  const provHTML = (src) => {
+    const p = PROV[src];
+    return p ? `<span class="prov" style="color:${p.color};background:${p.bg}">${p.label}</span>` : "";
+  };
 
   /* ===================================================================
      SHARED FRAGMENTS
@@ -233,6 +400,7 @@
           <p>${sub}</p>
           <div class="url-input">${IC.link}<input id="add-url" type="text" placeholder="https://youtube.com/watch?v=…"><button id="add-load">Extract</button></div>
           <div id="add-err"></div>
+          ${captchaWidgetHTML()}
           <div class="platform-row">${PLATFORMS.map((p) => `<span class="platform-chip"><span style="width:17px;height:17px;display:inline-block">${LOGOS[p.key]}</span>${p.label}</span>`).join("")}</div>
         </div>
       </div>`;
@@ -404,8 +572,8 @@
     ${desktopHeader()}
     <main class="wrap" style="padding-bottom:80px">
       <div class="detail-hero">
-        <span class="pill" style="color:#f24e1e">🍕 ${h(FEATURED.episode)} · by ${h(r.channel)}</span>
-        <h1 class="jc-h">Classic <span class="accent">Pepperoni</span> Pizza</h1>
+        <span class="pill" style="color:#f24e1e">${r.extracted ? "✨" : "🍕"} ${h(r.episode || FEATURED.episode)} · by ${h(r.channel)}</span>
+        <h1 class="jc-h">${titleHTML(r)}</h1>
         <p class="lede">${h(r.description)}</p>
       </div>
       <div class="video-zone" id="video-zone">${videoZoneHTML(r)}</div>
@@ -420,6 +588,7 @@
           ${equipmentHTML(r)}
         </div>
       </div>
+      ${r.extracted ? extractedMetaHTML(r) : ""}
       ${homeFeaturesHTML()}
       <section class="sec"><div class="sec-head"><div><h2>More from the kitchen</h2><p>Fresh cooks added every week — here's what's playing now.</p></div><span class="link-more" data-act="library">View all recipes →</span></div>
         <div class="grid">${RECIPES.filter((x) => x.id !== r.id).slice(0, 3).map((x) => recipeCardHTML(x)).join("")}</div></section>
@@ -434,7 +603,7 @@
         <iframe id="rc-iframe" src="${embedSrc(state.video.base, state.video.type, 0)}" title="Recipe video" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
         <button class="change" id="rc-change"><span class="dot"></span>${h(state.video.platform)} · Change</button>
       </div>
-      ${videoDecorHTML()}`;
+      ${videoDecorHTML(r)}`;
     }
     const suggest = r.video ? "https://youtu.be/" + r.video : "https://youtube.com/watch?v=";
     return `
@@ -458,20 +627,45 @@
         </div>
       </div>
     </div>
-    ${videoDecorHTML()}`;
+    ${videoDecorHTML(r)}`;
   }
-  const videoDecorHTML = () => `
-    <div class="decor-ready"><div class="k">READY IN</div><div class="v">35 min</div></div>
+  const videoDecorHTML = (r) => `
+    <div class="decor-ready"><div class="k">READY IN</div><div class="v">${h((r && r.time) || "35 min")}</div></div>
     <div class="cursor" style="bottom:-14px;right:46px;animation:drift1 7s ease-in-out infinite;z-index:5"><svg width="22" height="22" viewBox="0 0 24 24" style="filter:drop-shadow(0 2px 3px rgba(0,0,0,.25))"><path d="M4 2l15 8.5-6.4 1.6L9.6 19 4 2z" fill="#a259ff"/></svg><span style="background:#a259ff">Chef Mia</span></div>`;
+  const statVal = (v) => (v != null && v !== "" ? `${h(v)}<span class="u">min</span>` : "—");
   function detailBarHTML(r) {
     return `
     <div class="detail-bar">
-      <div class="stat prep"><div class="k">PREP</div><div class="v">20<span class="u">min</span></div></div>
-      <div class="stat cook"><div class="k">COOK</div><div class="v">15<span class="u">min</span></div></div>
-      <div class="stat total"><div class="k">TOTAL</div><div class="v">35<span class="u">min</span></div></div>
+      <div class="stat prep"><div class="k">PREP</div><div class="v">${statVal(r.prep)}</div></div>
+      <div class="stat cook"><div class="k">COOK</div><div class="v">${statVal(r.cook)}</div></div>
+      <div class="stat total"><div class="k">TOTAL</div><div class="v">${statVal(r.total)}</div></div>
       <div class="stat serves"><div class="k">SERVES</div><div class="v">${h(r.serves)}<span class="u">people</span></div></div>
       <div class="stat level"><div class="k">LEVEL</div><div class="v">${h(r.difficulty)}</div></div>
     </div>`;
+  }
+  /* Extraction transparency: what actually ran (AMD compute story) + tips/caveats. */
+  function extractedMetaHTML(r) {
+    const p = r.processing || {};
+    const dev = p.device === "cuda" ? (p.gpu_name || "AMD MI300X (ROCm)") : cap(p.device || "cpu");
+    const chips = [];
+    if (r.confidence != null) chips.push(`Confidence: <b>${r.confidence}%</b>`);
+    if (p.synthesizer) chips.push(`Synthesis: <b>${h(p.synthesizer)}</b>`);
+    if (p.vision && p.vision !== "none") chips.push(`Vision: <b>${h(p.vision)}</b>`);
+    if (p.transcriber && p.transcriber !== "none") chips.push(`ASR: <b>${h(p.transcriber)}</b>`);
+    chips.push(`Device: <b>${h(dev)}</b>`);
+    if (p.frames_analyzed) chips.push(`<b>${p.frames_analyzed}</b> frames`);
+    if (p.elapsed_seconds != null) chips.push(`<b>${p.elapsed_seconds}s</b>`);
+    const warn = (r.warnings || []).length
+      ? `<div class="ex-note-strip warn">⚠ ${r.warnings.map(h).join(" · ")}</div>` : "";
+    const tips = (r.tips || []).length
+      ? `<div class="ex-note-strip"><b>Tips</b><ul>${r.tips.map((t) => `<li>${h(t)}</li>`).join("")}</ul></div>` : "";
+    return `
+    <section class="sec">
+      <div class="amd-strip" style="justify-content:flex-start;gap:8px">
+        <span class="tag red">AMD</span><span>Extracted with</span> ${chips.join(" · ")}
+      </div>
+      ${warn}${tips}
+    </section>`;
   }
   function ingredientsHTML(r) {
     const set = checkedSet(r.id);
@@ -483,7 +677,7 @@
         return `
         <div class="ing-row ${on ? "done" : ""}" data-ing="${key}">
           <span class="tile" style="background:${g.bg}">${it.emoji}</span>
-          <span class="txt"><span class="amt">${h(it.amt)}</span> <span class="nm">${h(it.name)}</span></span>
+          <span class="txt"><span class="amt">${h(it.amt)}</span> <span class="nm">${h(it.name)}</span>${provHTML(it.src)}</span>
           <span class="box" style="${on ? `border-color:${g.color};background:${g.color}` : ""}">${on ? "✓" : ""}</span>
         </div>`;
       }).join("");
@@ -499,9 +693,12 @@
   function stepHTML(r, s, i) {
     const done = doneSet(r.id).has(i);
     const live = !!state.video;
+    const photo = s.photo
+      ? `<div class="photo"><img src="${s.photo}" alt="${h(s.t)}" loading="lazy"></div>`
+      : `<div class="photo ph" style="background:linear-gradient(135deg,${s.c},${s.c}33)"><span>${i + 1}</span></div>`;
     return `
     <div class="step ${done ? "done" : ""}" data-step="${i}">
-      <div class="photo"><img src="${s.photo}" alt="${h(s.t)}" loading="lazy"></div>
+      ${photo}
       <div class="sbody">
         <div class="srow">
           <div class="num" style="background:${s.c}">${done ? "✓" : i + 1}</div>
@@ -607,6 +804,16 @@
     return `<div class="m-kicker">${list.length} result${list.length === 1 ? "" : "s"}</div><div class="m-list">${list.map(mItemHTML).join("")}</div>`;
   }
 
+  const mStatVal = (v) => (v != null && v !== "" ? `${h(v)}m` : "—");
+  function metaLine(r) {
+    const parts = [];
+    if (r.rating) parts.push("★ " + h(r.rating));
+    if (r.confidence != null) parts.push(h(r.confidence) + "% confident");
+    if (r.cooks) parts.push(h(r.cooks) + " cooks");
+    parts.push("by " + h(r.channel));
+    return parts.join(" · ");
+  }
+
   /* MOBILE: Recipe detail */
   function recipeMobileHTML() {
     const r = recipeContent(byId(state.recipeId) || FEATURED);
@@ -627,12 +834,12 @@
           <div class="m-round" style="top:calc(56px + env(safe-area-inset-top,0px));right:16px">${IC.bookmark.replace('stroke="currentColor"', 'stroke="#1e1e1e"')}</div>
         </div>
         <div class="m-pad">
-          <span class="m-eyebrow">🍕 ${h(FEATURED.episode)}</span>
+          <span class="m-eyebrow">${r.extracted ? "✨" : "🍕"} ${h(r.episode || FEATURED.episode)}</span>
           <h2 class="m-rtitle">${h(r.name)}</h2>
-          <div class="m-rmeta">★ ${h(r.rating)} · ${h(FEATURED.cooks)} cooks · by ${h(r.channel)}</div>
+          <div class="m-rmeta">${metaLine(r)}</div>
           <div class="m-statgrid">
-            <div class="m-stat prep"><div class="k">PREP</div><div class="v">20m</div></div>
-            <div class="m-stat cook"><div class="k">COOK</div><div class="v">15m</div></div>
+            <div class="m-stat prep"><div class="k">PREP</div><div class="v">${mStatVal(r.prep)}</div></div>
+            <div class="m-stat cook"><div class="k">COOK</div><div class="v">${mStatVal(r.cook)}</div></div>
             <div class="m-stat serves"><div class="k">SERVES</div><div class="v">${h(r.serves)}</div></div>
             <div class="m-stat level"><div class="k">LEVEL</div><div class="v">${h(r.difficulty)}</div></div>
           </div>
@@ -655,7 +862,7 @@
       return `
       <div class="m-ing-row ${on ? "done" : ""}" data-ming="${key}">
         <span class="tile" style="background:${g.bg}">${it.emoji}</span>
-        <span class="txt"><span class="amt">${h(it.amt)}</span> ${h(it.name)}</span>
+        <span class="txt"><span class="amt">${h(it.amt)}</span> ${h(it.name)}${provHTML(it.src)}</span>
         <span class="box">${on ? "✓" : ""}</span>
       </div>`;
     }).join("")).join("");
@@ -668,10 +875,13 @@
   }
   function mStepHTML(r, s, i) {
     const done = doneSet(r.id).has(i);
+    const photo = s.photo
+      ? `<div class="photo"><img src="${s.photo}" alt="${h(s.t)}" loading="lazy"></div>`
+      : `<div class="photo ph" style="background:linear-gradient(135deg,${s.c},${s.c}33)"></div>`;
     return `
     <div class="m-step ${done ? "done" : ""}" data-step="${i}">
       <div class="num" style="background:${s.c}">${done ? "✓" : i + 1}</div>
-      <div class="photo"><img src="${s.photo}" alt="${h(s.t)}" loading="lazy"></div>
+      ${photo}
       <div class="b"><div class="top"><b>${h(s.t)}</b><span class="tc" data-seek="${s.start}">▶ ${h(s.tc)}</span></div><div class="d">${h(s.d)}</div></div>
     </div>`;
   }
@@ -768,11 +978,97 @@
   }
 
   /* ===================================================================
+     LIVE EXTRACTION — progress screen (what the user sees while the
+     backend turns the pasted video into a real, structured recipe).
+     =================================================================== */
+  const EX_STAGES = [
+    ["ingesting", "Fetching the video"],
+    ["extracting_audio", "Extracting audio"],
+    ["sampling_frames", "Sampling keyframes"],
+    ["transcribing", "Transcribing speech · Whisper on MI300X"],
+    ["analyzing_frames", "Reading on-screen text · Qwen2.5-VL on MI300X"],
+    ["synthesizing", "Structuring the recipe · Gemma"],
+    ["validating", "Validating quantities"],
+    ["done", "Recipe ready"],
+  ];
+  const EX_ORDER = EX_STAGES.map((s) => s[0]);
+  function exStagesHTML(cur) {
+    const ci = Math.max(0, EX_ORDER.indexOf(cur));
+    return EX_STAGES.map(([key, label], i) => {
+      const st = cur === "done" || i < ci ? "done" : i === ci ? "active" : "pending";
+      const mark = st === "done" ? "✓" : st === "active" ? '<span class="mini-spin"></span>' : i + 1;
+      return `<li class="ex-stage ${st}"><span class="mk">${mark}</span><span class="lb">${label}</span></li>`;
+    }).join("");
+  }
+  function extractViewHTML() {
+    const j = state.extractJob;
+    if (!j) {
+      return `<div class="extract-screen"><div class="extract-card"><div class="ex-side">
+        <div class="ex-head jc-h">Nothing to extract yet</div>
+        <p class="ex-sub">Paste a cooking video link and we'll pull out the full recipe.</p>
+        <div class="ex-actions"><button class="btn btn-dark" data-act="add">Paste a link</button>
+        <button class="btn btn-ghost" data-act="home">Back home</button></div>
+      </div></div></div>`;
+    }
+    const info = j.info;
+    const media = info
+      ? `<iframe id="ex-iframe" src="${embedSrc(info.base, info.type, 0)}" title="Pasted video" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`
+      : `<div class="ex-novid">🎬</div>`;
+    const err = j.phase === "error";
+    return `
+    <div class="extract-screen">
+      <div class="extract-card ${err ? "is-error" : ""}">
+        <div class="ex-video">${media}${info ? `<span class="ex-plat"><span class="dot"></span>${h(info.platform)}</span>` : ""}</div>
+        <div class="ex-side">
+          <div class="ex-brand">${brandHTML}</div>
+          <div class="ex-head jc-h">${err ? "Couldn't finish the extraction" : "Extracting your recipe"}</div>
+          <p class="ex-sub" id="ex-sub">${err
+            ? h(j.error || "Something went wrong.")
+            : "Reading the video with Whisper + Qwen2.5-VL on AMD MI300X, then structuring it with Gemma. Quantities are tagged by source, never invented."}</p>
+          ${err ? "" : `
+          <div class="ex-prog"><div class="track"><div class="fill" id="ex-fill" style="width:${j.pct || 4}%"></div></div><div class="pct" id="ex-pct">${Math.round(j.pct || 4)}%</div></div>
+          <ul class="ex-stages" id="ex-stages">${exStagesHTML(j.stageKey)}</ul>`}
+          ${err ? `<div class="ex-actions"><button class="btn btn-dark" id="ex-retry">Try again</button><button class="btn btn-ghost" data-act="sample">See a sample recipe</button></div>` : ""}
+        </div>
+      </div>
+    </div>`;
+  }
+  function wireExtract() {
+    app().onclick = (e) => {
+      const t = e.target.closest("[data-act],#ex-retry");
+      if (!t) return;
+      if (t.id === "ex-retry") {
+        const j = state.extractJob;
+        if (j) { j.phase = "running"; j.error = null; j.pct = 4; j.stageKey = "queued"; render(); runExtraction(); }
+        return;
+      }
+      const act = t.getAttribute("data-act");
+      if (act === "home") navigate("#/");
+      else if (act === "add") navigate("#/add");
+      else if (act === "sample") {
+        const info = state.extractJob && state.extractJob.info;
+        state.recipeId = FEATURED.id;
+        state.video = info ? { base: info.base, type: info.type, platform: info.platform } : videoFromId(FEATURED.video);
+        state.showPaste = false; state.seg = "ingredients"; state.cook = false; state.activeStep = 0;
+        state.extractJob = null;
+        navigate("#/recipe/" + FEATURED.id);
+      }
+    };
+  }
+
+  /* ===================================================================
      RENDER
      =================================================================== */
   function render() {
     const route = parseHash();
     state.view = route.view;
+    if (route.view === "extract") {
+      document.body.classList.toggle("is-mobile", isMobile());
+      window.scrollTo(0, 0);
+      app().innerHTML = extractViewHTML();
+      wireExtract();
+      return;
+    }
     if (route.view === "recipe" && route.id) {
       const r = byId(route.id) || FEATURED;
       if (r.id !== state.recipeId) {
@@ -869,9 +1165,11 @@
     const ms = $("#m-search-input");
     if (ms) ms.oninput = () => { state.query = ms.value; const box = $("#m-results"); const q = ms.value.trim().toLowerCase(); const list = RECIPES.filter((r) => (r.name + " " + r.cuisine).toLowerCase().includes(q)); box.innerHTML = q ? mSearchResults(list) : mBrowseDefault(); };
 
-    // add-flow load
+    // add-flow load → live extraction
     const addLoad = $("#add-load");
-    if (addLoad) { addLoad.onclick = () => addFlowLoad($("#add-url").value); const ai = $("#add-url"); if (ai) ai.onkeydown = (e) => { if (e.key === "Enter") addFlowLoad(ai.value); }; }
+    if (addLoad) { addLoad.onclick = () => startExtraction($("#add-url").value); const ai = $("#add-url"); if (ai) ai.onkeydown = (e) => { if (e.key === "Enter") startExtraction(ai.value); }; }
+    // captcha widget (proof-of-work verify button)
+    const capBtn = $("#cap-check"); if (capBtn) capBtn.onclick = () => ensureCaptcha(true);
 
     // mobile hero play
     const mplay = $("[data-mplay]"); if (mplay) mplay.onclick = () => { const r = byId(state.recipeId) || FEATURED; if (r.video) { state.video = videoFromId(r.video); render(); } else toast("No video attached to this recipe yet"); };
@@ -933,7 +1231,8 @@
   }
   function updateStepsCount() {
     const set = doneSet(state.recipeId);
-    const el = $("#steps-count"); if (el) el.textContent = `${set.size}/${FEATURED.steps.length} done`;
+    const r = recipeContent(byId(state.recipeId) || FEATURED);
+    const el = $("#steps-count"); if (el) el.textContent = `${set.size}/${r.steps.length} done`;
   }
   function segSwitch() {
     $$(".m-seg button").forEach((b) => b.classList.toggle("active", b.getAttribute("data-seg") === state.seg));
@@ -966,14 +1265,6 @@
     $$(".step .tc").forEach((c) => c.classList.add("live"));
     wire();
   }
-  function addFlowLoad(raw) {
-    const info = parseVideo(raw);
-    const err = $("#add-err");
-    if (info.error) { if (err) err.innerHTML = `<div class="url-err" style="margin-top:12px">${h(info.error)}</div>`; return; }
-    state.pendingVideo = { base: info.base, type: info.type, platform: info.platform };
-    // try a live extraction if the backend is up; otherwise just embed in the recipe shell
-    liveExtract(raw, info);
-  }
   function nextStep() {
     const r = recipeContent(byId(state.recipeId) || FEATURED);
     const set = doneSet(state.recipeId);
@@ -983,66 +1274,192 @@
     render();
   }
 
-  /* ---- optional live backend extraction (progressive enhancement) ---- */
-  async function liveExtract(raw, info) {
-    const zone = $("#video-zone");
+  /* ===================================================================
+     CAPTCHA — self-hosted Altcha proof-of-work (open source, no tracking).
+     The browser burns a little CPU solving a signed SHA-256 challenge; the
+     token gates POST /recipes so bots can't hammer the public extractor.
+     =================================================================== */
+  async function refreshCaptcha() {
+    try {
+      const res = await fetch(API_BASE + "/api/v1/meta", { cache: "no-store" });
+      if (!res.ok) return;
+      const meta = await res.json();
+      const on = !!meta.captcha_enabled;
+      if (on !== state.captcha.enabled) {
+        state.captcha.enabled = on;
+        if (on && (state.view === "home" || state.view === "add")) render();
+      }
+    } catch (e) { /* backend not up yet — widget just stays hidden */ }
+  }
+  function toHex(buf) {
+    return Array.from(new Uint8Array(buf)).map((b) => b.toString(16).padStart(2, "0")).join("");
+  }
+  async function powSolve(c) {
+    const enc = new TextEncoder();
+    const max = c.maxnumber || 100000;
+    for (let n = 0; n <= max; n++) {
+      const hex = toHex(await crypto.subtle.digest("SHA-256", enc.encode(c.salt + n)));
+      if (hex === c.challenge) {
+        return btoa(JSON.stringify({
+          algorithm: c.algorithm, challenge: c.challenge, number: n, salt: c.salt, signature: c.signature,
+        }));
+      }
+    }
+    throw new Error("could not solve challenge");
+  }
+  /* Return a fresh, valid captcha token (solving if needed). null when disabled. */
+  async function ensureCaptcha(force) {
+    if (!state.captcha.enabled) return null;
+    const fresh = state.captcha.token && Date.now() - state.captcha.at < 4 * 60 * 1000;
+    if (fresh && !force) return state.captcha.token;
+    state.captcha.solving = true; updateCaptchaWidget();
+    try {
+      const res = await fetch(API_BASE + "/api/v1/captcha", { cache: "no-store" });
+      const c = await res.json();
+      if (!c || !c.enabled) { state.captcha.enabled = false; return null; }
+      const token = await powSolve(c);
+      state.captcha.token = token; state.captcha.at = Date.now();
+      return token;
+    } finally { state.captcha.solving = false; updateCaptchaWidget(); }
+  }
+  function captchaWidgetHTML() {
+    if (!state.captcha.enabled) return "";
+    const verified = !!state.captcha.token && Date.now() - state.captcha.at < 4 * 60 * 1000;
+    const st = state.captcha.solving ? "solving" : verified ? "verified" : "idle";
+    const mark = st === "solving" ? '<span class="mini-spin"></span>' : st === "verified" ? "✓" : "";
+    const label = st === "solving" ? "Checking…" : st === "verified" ? "You're human ✓" : "Verify you're human";
+    return `
+      <div class="captcha" id="captcha-widget" data-state="${st}">
+        <button class="cap-box" id="cap-check" type="button" ${verified ? "disabled" : ""}>${mark}</button>
+        <div class="cap-txt"><span class="cap-label">${label}</span><span class="cap-sub">Open-source proof-of-work · no tracking</span></div>
+        <span class="cap-badge">🔒 Altcha</span>
+      </div>`;
+  }
+  function updateCaptchaWidget() {
+    const w = $("#captcha-widget"); if (!w) return;
+    w.outerHTML = captchaWidgetHTML();
+    const btn = $("#cap-check"); if (btn) btn.onclick = () => ensureCaptcha(true);
+  }
+
+  /* ---- live extraction: paste a link → real, structured recipe ---- */
+  function startExtraction(raw, errSel) {
+    const info = parseVideo(raw);
+    if (info.error) {
+      const err = $(errSel || "#add-err") || $("#rc-err");
+      if (err) err.innerHTML = `<div class="url-err" style="margin-top:12px">${h(info.error)}</div>`;
+      else toast(info.error);
+      return;
+    }
+    state.extractJob = { raw: raw.trim(), info, pct: 4, stageKey: "queued", phase: "running", error: null, jobId: null };
+    navigate("#/extract");
+    runExtraction();
+  }
+  async function runExtraction() {
+    const j = state.extractJob; if (!j) return;
     let up = false;
     try {
-      const ctrl = new AbortController(); const to = setTimeout(() => ctrl.abort(), 1200);
+      const ctrl = new AbortController(); const to = setTimeout(() => ctrl.abort(), 2000);
       const res = await fetch(API_BASE + "/health", { signal: ctrl.signal });
       clearTimeout(to); up = res.ok;
     } catch (e) { up = false; }
-
+    if (state.extractJob !== j) return;                 // user navigated away / restarted
     if (!up) {
-      // graceful fallback: open the featured recipe with the pasted video embedded
-      state.recipeId = FEATURED.id; state.video = info; state.showPaste = false;
-      state.seg = "ingredients"; state.cook = false;
-      toast("Embedded the video · start a backend to extract live");
-      navigate("#/recipe/" + FEATURED.id);
+      extractError("The RecipeReel backend isn't reachable at " + API_BASE +
+        ". Start it (make serve, or docker compose up) and try again.");
       return;
     }
-
-    if (zone) zone.innerHTML = extractProgressHTML();
-    else toast("Extracting…");
-    try {
-      const res = await fetch(API_BASE + "/api/v1/recipes", {
-        method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ url: raw }),
-      });
-      const job = await res.json();
-      streamJob(job.id, info, raw);
-    } catch (e) {
-      toast("Extraction failed — embedding instead");
-      state.recipeId = FEATURED.id; state.video = info; navigate("#/recipe/" + FEATURED.id);
+    // CAPTCHA: solve the proof-of-work before submitting (no-op when disabled).
+    let token = null;
+    if (state.captcha.enabled) {
+      j.verifying = true; const sub = $("#ex-sub");
+      if (sub) sub.textContent = "Verifying you're human (open-source proof-of-work)…";
+      try { token = await ensureCaptcha(); } catch (e) { extractError("Couldn't complete the human-verification step."); return; }
+      j.verifying = false;
+      if (state.extractJob !== j) return;
     }
+    let job;
+    try {
+      job = await postExtraction(j.raw, token);
+    } catch (e) {
+      if (e.status === 403 && state.captcha.enabled) {
+        // token expired / replayed — solve a fresh one and retry once
+        try { token = await ensureCaptcha(true); job = await postExtraction(j.raw, token); }
+        catch (e2) { extractError("Human-verification failed. Please try again."); return; }
+      } else { extractError("Couldn't start the extraction job (" + e.message + ")."); return; }
+    }
+    if (state.extractJob !== j) return;
+    j.jobId = job.id;
+    streamExtraction(job.id, j);
   }
-  const STAGE_LABEL = {
-    queued: "Queued", ingesting: "Fetching the video", extracting_audio: "Extracting audio",
-    sampling_frames: "Sampling keyframes", transcribing: "Transcribing (Whisper · MI300X)",
-    analyzing_frames: "Reading on-screen text (Qwen2.5-VL · MI300X)", synthesizing: "Structuring with Gemma",
-    validating: "Validating quantities", done: "Done", failed: "Failed",
-  };
-  function extractProgressHTML(pct, stage) {
-    return `
-    <div class="loader-card"><div class="extract">
-      <div class="spinner"></div>
-      <h3 class="jc-h" style="margin:0;font-size:22px;font-weight:700">Extracting your recipe</h3>
-      <div class="prog"><div class="track"><div class="fill" style="width:${pct || 4}%"></div></div>
-      <div class="stage">${h(stage || "Starting…")}</div></div>
-    </div></div>`;
+  async function postExtraction(raw, token) {
+    const headers = { "Content-Type": "application/json" };
+    if (token) headers["X-Altcha-Solution"] = token;
+    const res = await fetch(API_BASE + "/api/v1/recipes", {
+      method: "POST", headers, body: JSON.stringify({ url: raw }),
+    });
+    if (!res.ok) { const err = new Error("HTTP " + res.status); err.status = res.status; throw err; }
+    return res.json();
   }
-  function streamJob(jobId, info, raw) {
-    const es = new EventSource(API_BASE + "/api/v1/jobs/" + jobId + "/events");
+  function updateExtract(d) {
+    const j = state.extractJob; if (!j || j.phase === "error") return;
+    if (typeof d.percent === "number") j.pct = d.percent;
+    if (d.stage) j.stageKey = d.stage;
+    const fill = $("#ex-fill"); if (fill) fill.style.width = (j.pct || 0) + "%";
+    const pct = $("#ex-pct"); if (pct) pct.textContent = Math.round(j.pct || 0) + "%";
+    const stages = $("#ex-stages"); if (stages) stages.innerHTML = exStagesHTML(j.stageKey);
+  }
+  function streamExtraction(jobId, j) {
+    let es, settled = false;
+    try { es = new EventSource(API_BASE + "/api/v1/jobs/" + jobId + "/events"); }
+    catch (e) { pollExtraction(jobId, 0); return; }
     es.addEventListener("progress", (ev) => {
       let d; try { d = JSON.parse(ev.data); } catch (_) { return; }
-      const zone = $("#video-zone");
-      if (zone) { const fill = zone.querySelector(".fill"); const stage = zone.querySelector(".stage");
-        if (fill) fill.style.width = (d.percent || 0) + "%";
-        if (stage) stage.textContent = STAGE_LABEL[d.stage] || d.stage || ""; }
-      if (d.status === "succeeded" || d.stage === "done") { es.close(); state.recipeId = FEATURED.id; state.video = info; toast("Recipe extracted ✓"); navigate("#/recipe/" + FEATURED.id); }
-      else if (d.status === "failed" || d.stage === "failed") { es.close(); toast("Extraction failed — embedding instead"); state.video = info; navigate("#/recipe/" + FEATURED.id); }
+      if (state.extractJob !== j) { es.close(); return; }
+      updateExtract(d);
+      if (d.status === "succeeded" || d.stage === "done") { settled = true; es.close(); finishExtraction(d.recipe_id, jobId); }
+      else if (d.status === "failed" || d.stage === "failed") { settled = true; es.close(); extractError(d.error || "The video couldn't be processed."); }
     });
-    es.onerror = () => { es.close(); state.video = info; navigate("#/recipe/" + FEATURED.id); };
+    es.onerror = () => { if (settled) return; es.close(); pollExtraction(jobId, 0); };
+  }
+  async function pollExtraction(jobId, tries) {
+    if (!state.extractJob) return;
+    try {
+      const res = await fetch(API_BASE + "/api/v1/jobs/" + jobId);
+      if (res.ok) {
+        const jd = await res.json();
+        updateExtract({ percent: jd.progress && jd.progress.percent, stage: jd.progress && jd.progress.stage, status: jd.status });
+        if (jd.status === "succeeded") { finishExtraction(jd.recipe_id, jobId); return; }
+        if (jd.status === "failed") { extractError(jd.error || "The video couldn't be processed."); return; }
+      }
+    } catch (e) { /* transient — keep polling */ }
+    if (tries > 120) { extractError("Timed out waiting for the extraction to finish."); return; }
+    setTimeout(() => pollExtraction(jobId, tries + 1), 1000);
+  }
+  async function finishExtraction(recipeId, jobId) {
+    const j = state.extractJob; if (!j) return;
+    if (!recipeId) {
+      try { const r = await fetch(API_BASE + "/api/v1/jobs/" + jobId); recipeId = (await r.json()).recipe_id; } catch (e) { /* fall through */ }
+    }
+    if (!recipeId) { extractError("Extraction finished but no recipe was returned."); return; }
+    try {
+      const res = await fetch(API_BASE + "/api/v1/recipes/" + recipeId);
+      if (!res.ok) throw new Error("HTTP " + res.status);
+      const api = await res.json();
+      const mapped = mapApiRecipe(api, j.info);
+      EXTRACTED[mapped.id] = mapped;
+      state.recipeId = mapped.id;
+      state.video = j.info ? { base: j.info.base, type: j.info.type, platform: j.info.platform } : null;
+      state.showPaste = false; state.seg = "ingredients"; state.cook = false; state.activeStep = 0;
+      state.extractJob = null;
+      toast("Recipe extracted ✓");
+      navigate("#/recipe/" + mapped.id);
+    } catch (e) { extractError("Couldn't load the extracted recipe (" + e.message + ")."); }
+  }
+  function extractError(msg) {
+    if (!state.extractJob) return;
+    state.extractJob.phase = "error";
+    state.extractJob.error = msg;
+    if (state.view === "extract") render(); else toast(msg);
   }
 
   /* ---- misc ---- */
@@ -1070,4 +1487,5 @@
   window.addEventListener("hashchange", render);
   document.addEventListener("DOMContentLoaded", render);
   if (document.readyState !== "loading") render();
+  refreshCaptcha();   // discover whether the backend requires a CAPTCHA
 })();

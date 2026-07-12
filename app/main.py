@@ -11,7 +11,7 @@ from fastapi.responses import RedirectResponse
 from fastapi.staticfiles import StaticFiles
 
 from app import __version__
-from app.api import routes_health, routes_jobs, routes_recipes
+from app.api import routes_captcha, routes_health, routes_jobs, routes_recipes
 from app.config import settings
 from app.store import get_store
 from app.utils.hardware import gpu_info
@@ -58,6 +58,7 @@ app.add_middleware(
 )
 
 app.include_router(routes_health.router)
+app.include_router(routes_captcha.router)
 app.include_router(routes_recipes.router)
 app.include_router(routes_jobs.router)
 

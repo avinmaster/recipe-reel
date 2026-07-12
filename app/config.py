@@ -48,6 +48,12 @@ class Settings(BaseSettings):
     # Global offline switch: every stage uses its mock/fixture impl.
     mock_mode: bool = False
 
+    # ── CAPTCHA (self-hosted Altcha proof-of-work; protects the public /recipes endpoint) ──
+    captcha_enabled: bool = False
+    captcha_hmac_secret: str = ""          # set a long random value in production
+    captcha_complexity: int = 60000        # max PoW number (higher = more browser work)
+    captcha_ttl_seconds: int = 300         # how long a challenge stays valid
+
     # ── Fireworks AI (OpenAI-compatible) ─────────────────────────────────────
     fireworks_api_key: str = ""
     fireworks_base_url: str = "https://api.fireworks.ai/inference/v1"
@@ -82,6 +88,10 @@ class Settings(BaseSettings):
     max_keyframes: int = 24
     scene_threshold: float = 27.0
     ytdlp_cookies_from_browser: str = ""
+    # Path to a Netscape-format cookies.txt. Set this on a server/datacenter host where
+    # YouTube rejects the IP ("Sign in to confirm you're not a bot") — exported cookies from
+    # a logged-in session let yt-dlp fetch normally. Off by default.
+    ytdlp_cookies_file: str = ""
 
     # ── Storage ──────────────────────────────────────────────────────────────
     data_dir: str = "./data"

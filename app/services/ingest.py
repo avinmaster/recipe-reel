@@ -47,6 +47,10 @@ def ingest_url(url: str, workdir: Path) -> IngestResult:
     # shouldn't depend on a personal browser session). Enable via YTDLP_COOKIES_FROM_BROWSER.
     if settings.ytdlp_cookies_from_browser:
         common["cookiesfrombrowser"] = (settings.ytdlp_cookies_from_browser,)
+    # A cookies.txt file is the reliable unblock on datacenter IPs (no browser present).
+    elif settings.ytdlp_cookies_file and os.path.exists(settings.ytdlp_cookies_file):
+        common["cookiefile"] = settings.ytdlp_cookies_file
+        log.info("Using YouTube cookies file for ingest.")
 
     # 1) metadata only → enforce duration cap before downloading
     try:

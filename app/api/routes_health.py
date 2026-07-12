@@ -35,4 +35,5 @@ def meta() -> dict:
             "is_amd_gpu": is_amd_gpu(),
         },
         "fireworks_configured": settings.fireworks_ready,
+        "captcha_enabled": settings.captcha_enabled,
     }
