@@ -1,7 +1,7 @@
-# JustCook — RecipeReel front-end
+# RecipeReel front-end
 
 The web UI for RecipeReel. A **self-contained, no-build** single-page app (vanilla
-HTML/CSS/JS, no dependencies) that faithfully implements the JustCook design in `../design/`.
+HTML/CSS/JS, no dependencies) that faithfully implements the RecipeReel design in `../design/`.
 
 ## What it does
 

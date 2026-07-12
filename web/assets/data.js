@@ -1,5 +1,5 @@
 /* ===================================================================
-   JustCook / RecipeReel — seed data
+   RecipeReel — seed data
    All images verified reachable (Unsplash CDN) or are real YouTube
    thumbnails. All 8 videos supplied by the team are wired in.
    =================================================================== */

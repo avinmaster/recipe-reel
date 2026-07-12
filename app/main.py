@@ -63,7 +63,7 @@ app.include_router(routes_recipes.router)
 app.include_router(routes_jobs.router)
 
 
-# Serve the web UI (JustCook front-end) when present. It's a static, no-build
+# Serve the web UI (RecipeReel front-end) when present. It's a static, no-build
 # SPA under ./web; mounting it lets one process serve the API + UI, and the UI's
 # "paste a link" flow can then call this same backend for live extraction.
 _WEB_DIR = Path(__file__).resolve().parent.parent / "web"

@@ -311,6 +311,22 @@ kept shallow so it's a quick change.
     keystone): `deploy-app.sh` (systemd + venv + captcha), `setup-tunnel.sh` (one Cloudflare named
     tunnel → both apps), `README.md` runbook. Target VPS `root@213.136.89.75`. See memory `vps-deploy`.
 
+- **2026-07-12 (rebrand → RecipeReel + SEO/OG + redeploy)** — Per maintainer, dropped the
+  interim "JustCook" web-UI brand and made **RecipeReel** the single product name everywhere in
+  the shipped app: `web/index.html` (title, description, noscript), `web/assets/app.js` (nav +
+  footer brand, logo mark `J`→`R`, "WHY RECIPEREEL", featured-cook CTA), `web/assets/app.css` +
+  `web/assets/data.js` headers, `web/README.md`, and the `app/main.py` mount comment. Logo mark
+  is now `R`; favicon switched to a dark rounded square with an orange `R`. (The `design/*.dc.html`
+  Figma exports still carry the old name in their filenames — reference artifacts only, not
+  served.) **SEO/social:** full `<head>` with canonical, keywords, robots, **Open Graph**
+  (type/site_name/title/description/url/image + width/height/alt/secure_url) and **Twitter
+  `summary_large_image`** cards, all pointing at the live URL. Shipped a 1200×630 **OG cover**
+  at `web/assets/og-cover.png` (reused the polished `docs/cover.png`) so shared links unfurl with
+  a cover image. Redeployed to the VPS via `deploy/deploy-app.sh` → **live at
+  https://infra.tailc95f92.ts.net** (`/` 307→`/app/`). Verified live: title=RecipeReel, OG/Twitter
+  tags present with absolute HTTPS URLs, `og-cover.png` returns `200 image/png`, zero "JustCook"
+  left on the page. Local commit only (no push / no form — maintainer's call).
+
 <!-- Append new entries here as work progresses. Keep it terse and factual. -->
 
 ---

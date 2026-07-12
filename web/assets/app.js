@@ -1,5 +1,5 @@
 /* ===================================================================
-   JustCook / RecipeReel — front-end app
+   RecipeReel — front-end app
    Adaptive single-page app: desktop web shell (>820px) and full-bleed
    iOS-style mobile shell (<=820px) share one data + design language.
    No build step, no dependencies.
@@ -308,7 +308,7 @@
   /* ===================================================================
      SHARED FRAGMENTS
      =================================================================== */
-  const brandHTML = `<div class="brand" data-act="home"><div class="mark">J</div><span class="name">JustCook</span></div>`;
+  const brandHTML = `<div class="brand" data-act="home"><div class="mark">R</div><span class="name">RecipeReel</span></div>`;
   function difficultyBadge(d, cls) {
     const key = (d || "Easy").toLowerCase();
     return `<span class="badge badge-${key} ${cls || ""}">${h(d)}</span>`;
@@ -367,8 +367,8 @@
     return `
     <footer class="site-footer"><div class="inner">
       <div style="display:flex;align-items:center;gap:9px">
-        <div class="mark" style="width:24px;height:24px;border-radius:8px;background:#1e1e1e;display:flex;align-items:center;justify-content:center;color:#fff;font:700 13px/1 var(--head)">J</div>
-        <b class="jc-h" style="color:#1e1e1e">JustCook</b>
+        <div class="mark" style="width:24px;height:24px;border-radius:8px;background:#1e1e1e;display:flex;align-items:center;justify-content:center;color:#fff;font:700 13px/1 var(--head)">R</div>
+        <b class="jc-h" style="color:#1e1e1e">RecipeReel</b>
         <span>· Turn any cooking video into a perfect, structured recipe.</span>
       </div>
       <div style="display:flex;gap:18px">
@@ -472,7 +472,7 @@
     return `
     <section class="sec features" data-reveal>
       <div class="intro">
-        <span class="kicker">WHY JUSTCOOK</span>
+        <span class="kicker">WHY RECIPEREEL</span>
         <h2 class="jc-h">Cooking videos, minus the faff</h2>
         <p>Everything you need to actually cook the dish — pulled together on one clean, tappable page.</p>
       </div>
@@ -492,7 +492,7 @@
   const footerCTAHTML = () => `
     <section class="footer-cta" data-reveal>
       <h2 class="jc-h">Cooked it? Share your slice.</h2>
-      <p>Upload your own video, tag your recipe, and it could be next week's featured cook on JustCook.</p>
+      <p>Upload your own video, tag your recipe, and it could be next week's featured cook on RecipeReel.</p>
       <button class="btn btn-dark" data-act="add">Submit your recipe</button>
     </section>`;
 
