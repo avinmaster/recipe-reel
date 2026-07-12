@@ -92,6 +92,11 @@ class Settings(BaseSettings):
     # YouTube rejects the IP ("Sign in to confirm you're not a bot") — exported cookies from
     # a logged-in session let yt-dlp fetch normally. Off by default.
     ytdlp_cookies_file: str = ""
+    # Proxy for yt-dlp (scheme://user:pass@host:port). The reliable server-side unblock on a
+    # datacenter IP that YouTube bot-walls: route ingest through a RESIDENTIAL / ISP / mobile
+    # proxy so it presents as a real user (plain datacenter proxies are still blocked). The
+    # value is a secret — set it in .env, never in code. Empty = direct connection.
+    ytdlp_proxy: str = ""
 
     # ── Storage ──────────────────────────────────────────────────────────────
     data_dir: str = "./data"

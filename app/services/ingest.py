@@ -43,6 +43,12 @@ def ingest_url(url: str, workdir: Path) -> IngestResult:
     # This is what makes server-side YouTube downloads work WITHOUT browser cookies or a
     # personal account. Requires `node` (or `deno`) on PATH; harmless if absent.
     common["js_runtimes"] = {"node": {"path": None}, "deno": {"path": None}}
+    # Route through a proxy when configured. On a datacenter host YouTube bot-walls the IP;
+    # a residential/ISP/mobile proxy (value in .env, never in code) presents as a real user
+    # and is the reliable unblock without a personal account/cookies.
+    if settings.ytdlp_proxy:
+        common["proxy"] = settings.ytdlp_proxy
+        log.info("Routing yt-dlp ingest through configured proxy.")
     # Cookies are only needed for login-walled/age-gated content — off by default (a backend
     # shouldn't depend on a personal browser session). Enable via YTDLP_COOKIES_FROM_BROWSER.
     if settings.ytdlp_cookies_from_browser:
