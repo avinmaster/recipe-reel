@@ -33,17 +33,60 @@ It is a production-style FastAPI backend: async jobs, live SSE progress, SQLite 
 Try it live at https://infra.tailc95f92.ts.net/ — always-on in MOCK_MODE, no signup.
 ```
 
-## Technology tags (comma list)
+> ⚠️ **lablab's tag fields are closed dropdowns — you can only pick from their prespecified
+> lists, not type free text.** The values below are constrained to options that actually exist
+> in the form (captured from the live Categories / Event Tracks / Technologies Used dropdowns on
+> 2026-07-13). The full option lists are in `lablab-hackathon/lablab-submission-options.md`.
+
+## Event Track (lablab "Event Tracks" field — exactly 3 options; pick one)
+
+The field offers only the three hackathon tracks — `Hybrid Token-Efficient Routing Agent`,
+`Unicorn Track`, `Video Captioning`. We are Track 3:
 
 ```
-AMD Instinct MI300X, AMD ROCm, AMD Developer Cloud, Gemma, Google AI Studio, Fireworks AI, Whisper, Qwen2.5-VL, vLLM, FastAPI, Python, SQLite, Docker, Computer Vision, Multimodal AI, OCR, Server-Sent Events, schema.org
+Unicorn Track
 ```
 
-## Category tags (comma list)
+## Category tags (lablab "Categories" field — pick ONLY from its prespecified list)
+
+Load up on the ones that genuinely fit — all exist verbatim in the dropdown:
 
 ```
-AI/ML, Computer Vision, Multimodal, Generative AI, Developer Tools, API, Content Creation, Food & Cooking, Consumer
+Cooking, Food, Video, Content, Lifestyle, Web Application, Developer Tools, Education, Social Media, Entertainment, Productivity
 ```
+
+- **Core (must-have):** Cooking, Food, Video, Content, Lifestyle, Web Application.
+- **Strong adds:** Developer Tools (real REST API + schema.org export), Education (learn-to-cook /
+  tutorial videos), Social Media (ingests YouTube/TikTok/Instagram links), Entertainment (cooking
+  content), Productivity (save/scale/shop a recipe).
+- **Further valid options** if you want even more: `Utility and Tools`, `Summarization` (video → recipe
+  is summarization), `Drink`, `Home`, `Mobile Application` (the web app ships a full phone/iOS layout).
+
+> The old free-form tags (AI/ML · Computer Vision · Multimodal · Generative AI · API ·
+> "Content Creation" · "Food & Cooking" · Consumer) are **not** selectable — lablab's Categories
+> are domain buckets. Nearest valid equivalents used above: Content Creation → `Content`;
+> Food & Cooking → `Cooking` + `Food`.
+
+## Technology tags (lablab "Technologies Used" field — pick ONLY from its prespecified list)
+
+All exist verbatim in the dropdown:
+
+```
+AMD Developer Cloud, AMD ROCm, Gemma, AI Studio, Whisper, Qwen3-VL, HuggingFace Hub, rest api
+```
+
+- **Core:** AMD Developer Cloud, AMD ROCm (the MI300X compute story), Gemma, AI Studio (= Google AI
+  Studio), Whisper (ASR), HuggingFace Hub (Whisper/Qwen weights are pulled from HF), rest api (the API).
+- **Nearest-match caveat:** `Qwen3-VL` — the list has **no** "Qwen2.5-VL"; `Qwen3-VL` is the closest
+  selectable Qwen vision-language tag (the project actually runs Qwen2.5-VL). Add it unless you'd rather
+  not approximate.
+- **Optional (honesty tradeoff):** `Gemini AI` — the working demo's vision path uses `gemini-2.5-flash`.
+  Accurate, but it slightly muddies the "AMD + Gemma" headline, so include only if you want full fidelity.
+
+> **Not selectable** (were in the old list — drop them): AMD Instinct MI300X → covered by
+> `AMD Developer Cloud` + `AMD ROCm`; Google AI Studio → appears as `AI Studio`; Fireworks AI,
+> vLLM, FastAPI, Python, SQLite, Docker, OCR, Server-Sent Events, schema.org, Computer Vision,
+> Multimodal AI — **none** are in the Technologies list.
 
 > **Note — asset locations.** The cover, video, and deck below live in the **workspace container**
 > (`lablab-hackathon/demo/…`), *not* inside the cloned `recipe-reel/` GitHub repo. They are uploaded
