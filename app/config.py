@@ -98,6 +98,19 @@ class Settings(BaseSettings):
     # value is a secret — set it in .env, never in code. Empty = direct connection.
     ytdlp_proxy: str = ""
 
+    # ── SocialKit (hosted YouTube download API) ──────────────────────────────
+    # Downloads the file from SocialKit's OWN storage (a pre-signed URL), so the bytes come
+    # from their host, not googlevideo — this sidesteps YouTube's datacenter-IP bot wall that
+    # blocks yt-dlp on a VPS. Preferred for YouTube URLs when the key is set; yt-dlp is the
+    # fallback. Secret: set SOCIALKIT_API_KEY in .env, never in code.
+    socialkit_api_key: str = ""
+    socialkit_base_url: str = "https://api.socialkit.dev"
+    socialkit_quality: str = "360p"   # 240p|360p|480p|720p|1080p — kept low to fit the size cap
+    socialkit_timeout: float = 120.0
+    # Operational kill-switch. Flip off (YOUTUBE_INGEST_ENABLED=false) if YouTube ingest breaks,
+    # so clients get a clean "temporarily unavailable — please upload" instead of a raw error.
+    youtube_ingest_enabled: bool = True
+
     # ── Storage ──────────────────────────────────────────────────────────────
     data_dir: str = "./data"
     database_url: str = "sqlite:///./data/recipereel.db"

@@ -36,4 +36,11 @@ def meta() -> dict:
         },
         "fireworks_configured": settings.fireworks_ready,
         "captcha_enabled": settings.captcha_enabled,
+        # Lets the UI reflect ingest availability (e.g. gray out / message the "paste a link" tab
+        # for YouTube when it's disabled) instead of surfacing a failed extraction to the user.
+        "ingest": {
+            "upload": True,
+            "youtube": settings.youtube_ingest_enabled,
+            "youtube_provider": "socialkit" if settings.socialkit_api_key else "ytdlp",
+        },
     }
