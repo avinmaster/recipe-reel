@@ -250,6 +250,7 @@
     cook: false, activeStep: 0,
     extractJob: null,       // live extraction in progress {raw,info,pct,stageKey,phase,error,jobId}
     captcha: { enabled: false, token: null, at: 0, solving: false },
+    ingest: { upload: true, youtube: true, youtube_provider: null }, // from /api/v1/meta.ingest
   };
   const checkedSet = (id) => (state.checked[id] = state.checked[id] || new Set());
   const doneSet = (id) => (state.done[id] = state.done[id] || new Set());
@@ -387,6 +388,14 @@
         <span>🌿 fresh basil</span><span class="sep">•</span>`).join("")}
     </div></div>`;
 
+  /* YouTube link ingest availability (from /api/v1/meta.ingest). Fail-open: only shows the
+     "unavailable" notice when the backend explicitly reports youtube:false. */
+  function ytIngestOff() { return !!(state.ingest && state.ingest.youtube === false); }
+  function ingestNoticeHTML() {
+    if (!ytIngestOff()) return "";
+    return `<div style="margin:0 0 14px;padding:11px 13px;border-radius:10px;background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;font-size:13px;line-height:1.45;text-align:left">⚠️ <b>YouTube link extraction is paused right now.</b> Upload the video file instead — or try a Vimeo / Instagram / TikTok link.</div>`;
+  }
+
   /* Shared paste-a-link / upload card (used by the home hero + the Add page) */
   function addLoaderCardHTML(opts) {
     opts = opts || {};
@@ -398,6 +407,7 @@
           <div class="icon"><span class="ring"></span><span class="disc"><span class="play-tri"></span></span></div>
           <h3 class="jc-h">${heading}</h3>
           <p>${sub}</p>
+          ${ingestNoticeHTML()}
           <div class="url-input">${IC.link}<input id="add-url" type="text" placeholder="https://youtube.com/watch?v=…"><button id="add-load">Extract</button></div>
           <div id="add-err"></div>
           ${captchaWidgetHTML()}
@@ -968,6 +978,7 @@
       <p style="margin:0 0 16px;font-size:14px;color:var(--muted-2)">We'll pull in the video and let you add ingredients &amp; steps.</p>
       <div class="m-url">${IC.link}<input id="add-url" type="text" placeholder="youtube.com/watch?v=…"><button id="add-load" class="btn btn-dark" style="padding:8px 14px">Load</button></div>
       <div id="add-err"></div>
+      ${ingestNoticeHTML()}
       <div class="m-kicker">Works with</div>
       <div class="m-platform-grid">
         ${PLATFORMS.map((p) => `<div class="m-platform"><span style="width:26px;height:26px;display:inline-block">${LOGOS[p.key]}</span><span>${p.label === "Instagram" ? "Insta" : p.label === "Facebook" ? "FB" : p.label}</span></div>`).join("")}
@@ -1028,7 +1039,7 @@
           ${err ? "" : `
           <div class="ex-prog"><div class="track"><div class="fill" id="ex-fill" style="width:${j.pct || 4}%"></div></div><div class="pct" id="ex-pct">${Math.round(j.pct || 4)}%</div></div>
           <ul class="ex-stages" id="ex-stages">${exStagesHTML(j.stageKey)}</ul>`}
-          ${err ? `<div class="ex-actions"><button class="btn btn-dark" id="ex-retry">Try again</button><button class="btn btn-ghost" data-act="sample">See a sample recipe</button></div>` : ""}
+          ${err ? `<div class="ex-actions"><button class="btn btn-dark" id="ex-retry">Try again</button><button class="btn btn-ghost" data-act="add">Upload a file instead</button><button class="btn btn-ghost" data-act="sample">See a sample recipe</button></div>` : ""}
         </div>
       </div>
     </div>`;
@@ -1289,6 +1300,11 @@
         state.captcha.enabled = on;
         if (on && (state.view === "home" || state.view === "add")) render();
       }
+      if (meta.ingest) {
+        const changed = JSON.stringify(meta.ingest) !== JSON.stringify(state.ingest);
+        state.ingest = meta.ingest;
+        if (changed && (state.view === "home" || state.view === "add" || state.view === "recipe")) render();
+      }
     } catch (e) { /* backend not up yet — widget just stays hidden */ }
   }
   function toHex(buf) {
@@ -1348,6 +1364,13 @@
       const err = $(errSel || "#add-err") || $("#rc-err");
       if (err) err.innerHTML = `<div class="url-err" style="margin-top:12px">${h(info.error)}</div>`;
       else toast(info.error);
+      return;
+    }
+    if (info.type === "youtube" && ytIngestOff()) {
+      const err = $(errSel || "#add-err") || $("#rc-err");
+      const msg = "YouTube link extraction is temporarily unavailable. Please upload the video file instead.";
+      if (err) err.innerHTML = `<div class="url-err" style="margin-top:12px">${h(msg)}</div>`;
+      else toast(msg);
       return;
     }
     state.extractJob = { raw: raw.trim(), info, pct: 4, stageKey: "queued", phase: "running", error: null, jobId: null };
