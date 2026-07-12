@@ -348,6 +348,34 @@ kept shallow so it's a quick change.
     (proxy-ipv4 has no cancel/refund endpoint) but are exactly what `kriptokonkurs-scraper` uses for
     non-YouTube scraping — repurpose there, not wasted. See memory `vps-deploy`.
 
+- **2026-07-12 (YouTube on the VPS SOLVED via SocialKit hosted API)** — After proving that
+  proxies+cookies+PO-token still couldn't reliably beat YouTube's datacenter-IP wall (it's the IP,
+  not the tool — cobalt/savefrom hit the same wall; researched via two subagents), switched the
+  YouTube path to a **hosted download API (SocialKit)**. It serves the file from *its own storage*
+  (pre-signed S3 URL), so the bytes arrive from any IP → sidesteps the wall entirely. Verified
+  end-to-end **on the box**: YouTube URL → SocialKit → mp4 (11.8 MB) → 24 keyframes sampled → into
+  the normal Gemini-vision + Gemma-synth pipeline.
+  - **`services/ingest.py` restructured:** `ingest_url()` is now a dispatcher →
+    `_ingest_via_socialkit()` (preferred for YouTube when `SOCIALKIT_API_KEY` set) → `_ingest_via_
+    ytdlp()` fallback. SocialKit prefers **mp4** (audio+frames for vision), falls back to **m4a**
+    (audio→transcript) if the video exceeds its per-file size cap (~soft 10 MB; mp4 to ~12 MB seen
+    OK). `POST https://api.socialkit.dev/youtube/download`, header `x-access-key`, returns
+    `data.downloadUrl`+title/durationSeconds/thumbnail. Key is a **secret in `.env`** (never code).
+  - **Client-safe errors (maintainer ask):** `_validate_url()` rejects junk/non-http URLs (incl.
+    `javascript:`); `_friendly_url_error()` translates raw extractor errors ("confirm you're not a
+    bot", "format not available", 429, private/age) → a calm *"temporarily unavailable — please
+    upload the file directly"* — **the bot-wall string never reaches the client** (`worker.py` sets
+    `job.error = str(exc)` verbatim, so the fix is at the raise site). `YOUTUBE_INGEST_ENABLED=false`
+    kill-switch cleanly disables YT links. `/api/v1/meta.ingest` = `{upload, youtube,
+    youtube_provider}` so the UI can gray out / message the paste-a-link tab.
+  - **Verified:** 24 pytest green (+`tests/test_ingest.py`: no-leak, validation, kill-switch), ruff
+    clean, `import app.main` clean; deployed + healthy; box `/meta` shows `youtube_provider:
+    socialkit`. Commit `3ba0c68`. **Cost:** SocialKit free tier to start ($13/mo → 2,000 reqs). The
+    residential proxy + bgutil POT stay wired as the yt-dlp fallback but are no longer the primary
+    path. **TODO (optional):** front-end can read `/meta.ingest.youtube` to message the link tab;
+    for full-video vision on long clips (SocialKit caps file size) a **mobile proxy** remains the
+    in-house alternative.
+
 <!-- Append new entries here as work progresses. Keep it terse and factual. -->
 
 ---
