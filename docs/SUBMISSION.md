@@ -22,15 +22,15 @@ Turn any cooking video into a perfect, structured recipe — ingredients with re
 ## Long description
 
 ```
-RecipeReel turns any cooking video into a perfect, structured recipe. Paste a YouTube, TikTok, or Instagram link — or upload a file — and get back ingredients with real quantities, step-by-step instructions that deep-link to the exact moment in the video, prep/cook/total times, equipment, tips, and an estimated nutrition panel — as clean JSON or schema.org/Recipe JSON-LD you can drop straight into a website for rich-result eligibility.
+RecipeReel turns any cooking video into a perfect, structured recipe. Paste a YouTube, TikTok, or Instagram link — or upload a file — and get back ingredients with real quantities, step-by-step instructions that deep-link to the exact moment in the video, prep/cook/total times, equipment, tips, and nutrition — as clean JSON or schema.org/Recipe JSON-LD you can drop straight into a website.
 
-Most "video → recipe" tools only read the transcript, so they miss the amounts — because in real cooking videos the quantities are shown as on-screen text, not spoken aloud. RecipeReel fuses three signals: Whisper-large-v3 speech recognition for the steps and their timing, and Qwen2.5-VL vision + on-screen-text (OCR) for the exact quantities — both running on AMD Instinct MI300X GPUs via ROCm — then Gemma-4 structures everything into one validated recipe. Quantities are never invented: every field is flagged as spoken, on-screen, or inferred, and unknown amounts are left null rather than hallucinated.
+Most "video → recipe" tools only read the transcript, so they miss the amounts — because in real cooking videos the quantities are shown as on-screen text, not spoken. RecipeReel fuses two signals: Whisper-large-v3 speech recognition for the timed steps, and Qwen2.5-VL vision + on-screen-text (OCR) for the exact quantities — both on AMD Instinct MI300X GPUs via ROCm — then Gemma-4 structures everything into one validated recipe. Quantities are never invented: every field is flagged spoken, on-screen, or inferred, and unknown amounts are left null, not hallucinated.
 
-It runs real AMD compute, not a checkbox. The repo ships a ready-to-run notebook (notebooks/amd_recipereel_demo.ipynb) that runs Whisper-large-v3 + Qwen2.5-VL on the MI300X and, when executed on the pod, prints the live device string and peak GPU memory. Gemma structuring runs on one OpenAI-compatible code path with three interchangeable routes — free Google AI Studio (real Gemma-4), hosted Fireworks AI (OpenAI-compatible; runs a fast model such as GLM 5.2 Fast, since Gemma is not on Fireworks serverless), or self-hosted vLLM on the MI300X (Gemma-3-27B) — so switching cost/latency/quality is a config change, not a rewrite.
+It runs real AMD compute, not a checkbox. The repo ships a ready-to-run notebook that runs Whisper + Qwen2.5-VL on the MI300X and prints the live device string and peak GPU memory. Gemma structuring runs on one OpenAI-compatible code path with three interchangeable routes — free Google AI Studio (real Gemma-4), Fireworks AI, or self-hosted vLLM on the MI300X — so switching cost/latency/quality is a config change, not a rewrite.
 
-It is a production-style FastAPI backend: async jobs, live progress over SSE, SQLite persistence, pluggable providers with graceful CPU/mock fallback, containerized, and MIT-licensed. A global MOCK_MODE drives the entire pipeline offline from a bundled fixture, so judges can click the live demo and run the real code path end-to-end with zero setup, zero keys, and zero GPU.
+It is a production-style FastAPI backend: async jobs, live SSE progress, SQLite persistence, pluggable providers with graceful CPU/mock fallback, containerized, MIT-licensed. A global MOCK_MODE drives the whole pipeline offline from a bundled fixture, so judges can run the real code path end-to-end with zero setup, keys, or GPU.
 
-Try it live at https://infra.tailc95f92.ts.net/ — always-on in MOCK_MODE, no signup required.
+Try it live at https://infra.tailc95f92.ts.net/ — always-on in MOCK_MODE, no signup.
 ```
 
 ## Technology tags (comma list)
